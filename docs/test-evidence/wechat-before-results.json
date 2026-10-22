@@ -1,0 +1,191 @@
+{
+  "config": {
+    "argv": [
+      "D:\\nodejs\\node.exe",
+      "D:\\桌面\\大三上\\数据库大作业\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/e2e/browser-compat.spec.ts",
+      "--reporter=list,json"
+    ],
+    "configFile": "D:\\桌面\\大三上\\数据库大作业\\playwright.config.ts",
+    "rootDir": "D:/桌面/大三上/数据库大作业/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/桌面/大三上/数据库大作业/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "D:/桌面/大三上/数据库大作业/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\桌面\\大三上\\数据库大作业\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "",
+        "testDir": "D:\\桌面\\大三上\\数据库大作业\\tests\\e2e",
+        "snapshotDir": "D:\\桌面\\大三上\\数据库大作业\\tests\\e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://172.25.23.29:3010",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "launchOptions": {
+            "executablePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+          },
+          "headless": true
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "browser-compat.spec.ts",
+      "file": "browser-compat.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "HTTP微信兼容：四类题、选项、跳转、分享、填写及修改在缺少安全上下文API时可用",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 6675,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByLabel('题目标题', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByLabel('题目标题', { exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByLabel('题目标题', { exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByLabel('题目标题', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByLabel('题目标题', { exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByLabel('题目标题', { exact: true })\u001b[22m\n\n    at D:\\桌面\\大三上\\数据库大作业\\tests\\e2e\\browser-compat.spec.ts:33:58",
+                    "location": {
+                      "file": "D:\\桌面\\大三上\\数据库大作业\\tests\\e2e\\browser-compat.spec.ts",
+                      "column": 58,
+                      "line": 33
+                    },
+                    "snippet": "  31 |   await page.getByLabel(\"问卷标题\", { exact: true }).fill(\"微信局域网兼容验证\");\n  32 |   await page.getByRole(\"button\", { name: \"单选题\", exact: true }).click();\n> 33 |   await expect(page.getByLabel(\"题目标题\", { exact: true })).toBeVisible();\n     |                                                          ^\n  34 |   await page.getByLabel(\"题目标题\", { exact: true }).fill(\"是否继续？\");\n  35 |   await page.getByLabel(\"选项 1\", { exact: true }).fill(\"继续\");\n  36 |   await page.getByLabel(\"选项 2\", { exact: true }).fill(\"提前结束\");"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "D:\\桌面\\大三上\\数据库大作业\\tests\\e2e\\browser-compat.spec.ts",
+                        "column": 58,
+                        "line": 33
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByLabel('题目标题', { exact: true })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByLabel('题目标题', { exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByLabel('题目标题', { exact: true })\u001b[22m\n\n\n  31 |   await page.getByLabel(\"问卷标题\", { exact: true }).fill(\"微信局域网兼容验证\");\n  32 |   await page.getByRole(\"button\", { name: \"单选题\", exact: true }).click();\n> 33 |   await expect(page.getByLabel(\"题目标题\", { exact: true })).toBeVisible();\n     |                                                          ^\n  34 |   await page.getByLabel(\"题目标题\", { exact: true }).fill(\"是否继续？\");\n  35 |   await page.getByLabel(\"选项 1\", { exact: true }).fill(\"继续\");\n  36 |   await page.getByLabel(\"选项 2\", { exact: true }).fill(\"提前结束\");\n    at D:\\桌面\\大三上\\数据库大作业\\tests\\e2e\\browser-compat.spec.ts:33:58"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-21T02:59:12.903Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "D:\\桌面\\大三上\\数据库大作业\\test-results\\browser-compat-HTTP微信兼容：四类题、选项、跳转、分享、填写及修改在缺少安全上下文API时可用\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "D:\\桌面\\大三上\\数据库大作业\\test-results\\browser-compat-HTTP微信兼容：四类题、选项、跳转、分享、填写及修改在缺少安全上下文API时可用\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "D:\\桌面\\大三上\\数据库大作业\\test-results\\browser-compat-HTTP微信兼容：四类题、选项、跳转、分享、填写及修改在缺少安全上下文API时可用\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "D:\\桌面\\大三上\\数据库大作业\\tests\\e2e\\browser-compat.spec.ts",
+                    "column": 58,
+                    "line": 33
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "6062103875e6307010e4-9f1182fd3322223a99f9",
+          "file": "browser-compat.spec.ts",
+          "line": 14,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-21T02:59:12.308Z",
+    "duration": 7910.271000000001,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

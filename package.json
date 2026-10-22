@@ -1,0 +1,58 @@
+{
+  "name": "survey-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "setup": "tsx scripts/setup.ts",
+    "db:start": "tsx scripts/mongo.ts",
+    "db:init": "tsx scripts/database.ts init",
+    "db:seed": "tsx scripts/database.ts seed",
+    "dev": "concurrently -k \"tsx watch apps/server/src/index.ts\" \"vite --config apps/web/vite.config.ts\"",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit",
+    "build": "npm run typecheck && tsc -p tsconfig.server.json && vite build --config apps/web/vite.config.ts",
+    "start": "node dist/apps/server/src/index.js",
+    "test": "vitest run",
+    "test:e2e": "tsx scripts/browser.ts",
+    "smoke": "tsx scripts/smoke.ts"
+  },
+  "dependencies": {
+    "argon2": "^0.44.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "lucide-react": "^0.468.0",
+    "mongodb": "^6.21.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.4",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.10.0",
+    "@types/pngjs": "^6.0.5",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@types/supertest": "^6.0.3",
+    "@vitejs/plugin-react": "^5.0.4",
+    "concurrently": "^9.2.1",
+    "jsqr": "^1.4.0",
+    "pngjs": "^7.0.0",
+    "prettier": "^3.9.10",
+    "supertest": "^7.1.4",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12",
+    "vitest": "^3.2.4"
+  }
+}

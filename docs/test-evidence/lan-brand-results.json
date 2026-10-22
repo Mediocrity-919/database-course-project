@@ -1,0 +1,11 @@
+{
+  "base": "http://172.25.23.29:3000",
+  "healthStatus": 200,
+  "preflightStatus": 204,
+  "corsOrigin": "http://172.25.23.29:3000",
+  "localhostStatus": 200,
+  "title": "问笺 · 问卷工作台",
+  "oldNoticeRemoved": true,
+  "oldBrandRemoved": true,
+  "scope": "Verified on host using WLAN IPv4; another physical device not yet checked"
+}
