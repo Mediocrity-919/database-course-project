@@ -1,5 +1,13 @@
 # 第一阶段实际测试结果
 
+## 2026-10-22：提交前完整复验
+
+依据提交要求重新核对仓库包含前后端源码、README、MongoDB schema、配置模板和测试用例。启动验收时项目MongoDB未运行，集成测试出现ECONNREFUSED；按README启动已有survey-rs副本集后完整重跑，最终94项单元/API全部通过、0跳过，类型检查和生产构建通过。
+
+浏览器使用当天无线IPv4对应的http://192.168.1.101:3010普通HTTP入口，19条全部通过、0失败、0跳过、0flaky，HTTP冒烟通过。测试仅使用questionnaire_test，不清理开发库。新证据为[test-evidence/submission-unit-results.json](test-evidence/submission-unit-results.json)和[test-evidence/submission-browser-results.json](test-evidence/submission-browser-results.json)。本次没有修改业务代码。
+
+报告补入仓库链接、姓名彭欣、提交日期、API摘要和六类必测输入输出，生成符合命名要求的PDF。中文字体已嵌入，目录与仓库链接可点击；检查所有页面渲染、分页、表格和页码。保留原有历史测试记录及真机、部署、备份和干净安装未验证的边界。
+
 ## 2026-10-21：微信与普通HTTP兼容修复——最新完整回归
 
 用户从iPhone微信反馈点击题型不能添加。修复前通过真实局域网HTTP复现，trace确认crypto.randomUUID is not a function；该错误也会影响开始填写及提交标识。新增uuid.ts统一使用原生能力或getRandomValues回退，不降低UUID校验；补充复制链接选中/手动复制、手机提示及填写导航兼容。

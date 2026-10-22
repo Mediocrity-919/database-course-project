@@ -2,6 +2,12 @@
 
 检查日期：2026-10-22（Asia/Shanghai）。
 
+## PDF交付复核
+
+根据课程提交截图制作`output/pdf/2026_ECNU_PJ1_1_彭欣.pdf`，仓库链接位于首页最前。报告补齐姓名、当前日期、API摘要、六类测试步骤与输入输出，并保留MongoDB设计及AI使用过程说明。PDF正文及全部渲染页面检查通过，中文字体嵌入、链接可点击。
+
+提交前重新执行94项单元/API、19条真实局域网HTTP浏览器流程、类型检查、生产构建及HTTP冒烟，全部通过。新增submission-unit-results.json和submission-browser-results.json；下文“最新完整功能验证为2026-10-21”记录的是此前首次Git整理时的状态，本节为后续最新复核。本次文档及PDF不改变db9388e对应的业务代码基线。
+
 目标仓库：`Mediocrity-919/database-course-project`。已通过当前GitHub登录确认归属和推送权限；仓库创建时为空，默认分支为main，可见性为公开。本次保留原可见性。
 
 ## 提交范围

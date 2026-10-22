@@ -1,7 +1,11 @@
+代码仓库：https://github.com/Mediocrity-919/database-course-project
+
 # 基于 MongoDB 的问卷系统——第一阶段项目完成报告
 
+姓名：彭欣  
 项目名称：问笺（Survey Studio）  
-报告日期：2026年10月20日  
+报告日期：2026年10月22日  
+阶段一代码基线：main / db9388e  
 需求依据：项目根目录《大作业一.docx》的第一阶段及初始用户需求  
 实现范围：本地前后端、MongoDB结构、自动测试与Markdown交付材料。公网部署尚未执行。
 
@@ -277,6 +281,24 @@ submissionId和规范化答案摘要处理提交重试：同ID同内容返回原
 
 上一题和下一题都会先保存有效答案。未满足长度、范围或数量要求的输入仅暂存页面并提示，修正前刷新可能丢失该部分；“保存每次填写”实现为尝试文档及合规逐题持久化，不是每个按键自动写库。
 
+### 6.1 API交互与权限摘要
+
+所有接口统一使用/api/v1前缀，答案、定义和错误使用JSON。登录成功设置HttpOnly会话Cookie，并返回csrfToken；修改请求同时检查登录身份、可信Origin及X-CSRF-Token，注册与登录入口执行来源检查及限流。
+
+| 方法及路径 | 权限 | 主要输入和结果 |
+| --- | --- | --- |
+| POST /auth/register、/auth/login | 公开 | username、password；创建账号或返回会话与CSRF令牌 |
+| GET /surveys；POST /surveys | 登录 | 查询本人列表；创建具有publicId的问卷草稿 |
+| PUT /surveys/:id/draft | 创建者 | revision、definition、deadlineAt；返回新revision |
+| POST /surveys/:id/publish | 创建者 | revision；事务生成不可变发布快照 |
+| POST /public/surveys/:publicId/attempts | 登录 | clientAttemptId、isAnonymous；创建或幂等返回填写尝试 |
+| PUT /attempts/:id/answers | 填写本人 | revision、answers；验证后保存有效答案 |
+| POST /attempts/:id/submit | 填写本人 | revision、answers、submissionId；事务返回提交凭证 |
+| POST /attempts/:id/edit | 填写本人 | revision；策略允许时进入原答卷修改草稿 |
+| GET /surveys/:id/stats | 创建者 | 查询已提交数据的整卷及单题统计 |
+
+非法输入返回422，未登录返回401，越权管理请求按资源不存在返回404，revision或重复限制冲突返回409，问卷关闭或截止返回410。服务器不采信客户端指定的ownerId、questionType或repeatAllowed。完整路由、请求示例及错误码见[API说明](api.md)。
+
 ## 7. 统计口径与实现
 
 聚合只匹配指定问卷、版本且status=submitted的答卷，不读取in_progress或editDraft。使用$facet、$unwind、$group、$addToSet及$avg，直接从事实数据计算结果。
@@ -304,7 +326,7 @@ submissionId和规范化答案摘要处理提交重试：同ID同内容返回原
 
 使用Vitest测试共享规则、Supertest访问真实Express接口及MongoDB、Playwright驱动Chrome。生产构建后另运行HTTP冒烟。所有测试写入questionnaire_test，测试入口拒绝其他数据库名；不得与依赖同一测试库的其他测试进程同时运行。开发数据没有作为清理对象。
 
-2026年10月21日完成局域网HTTP及微信兼容修复后，重新执行的最新结果如下；文本修复等既有用例也包含在内：
+2026年10月22日提交前重新执行完整验收，结果如下；2026年10月21日完成的局域网HTTP及微信兼容修复和文本边界等既有用例均包含在内。浏览器本次使用当前局域网入口http://192.168.1.101:3010，仍只访问questionnaire_test。
 
 | 检查                     | 结果                                         | 证据                                                  |
 | ------------------------ | -------------------------------------------- | ----------------------------------------------------- |
@@ -313,8 +335,8 @@ submissionId和规范化答案摘要处理提交重试：同ID同内容返回原
 | 定义、校验及跳转单元测试 | 29通过                                       | tests/domain.test.ts                                  |
 | 填写进度规则             | 6通过                                        | tests/progress.test.ts                                |
 | UUID浏览器能力兼容       | 4通过                                        | tests/uuid.test.ts                                    |
-| 单元/API合计             | 94通过，0失败                                | [Vitest JSON](test-evidence/unit-api-results.json)    |
-| Chrome浏览器流程         | 19通过，0失败、0重试后通过；真实LAN HTTP入口 | [Playwright JSON](test-evidence/browser-results.json) |
+| 单元/API合计             | 94通过，0失败                                | [Vitest JSON](test-evidence/submission-unit-results.json)    |
+| Chrome浏览器流程         | 19通过，0失败、0重试后通过；真实LAN HTTP入口 | [Playwright JSON](test-evidence/submission-browser-results.json) |
 | TypeScript及生产构建     | 通过                                         | npm run build实际输出                                 |
 | HTTP冒烟                 | 通过                                         | npm run smoke实际输出                                 |
 | 390×844移动视口          | 字符计数提示可见，无横向溢出                 | 浏览器断言及实际截图检查                              |
@@ -332,13 +354,28 @@ npm.cmd run test:e2e
 npm.cmd run smoke
 ```
 
-详细结果与历史修复记录见[测试结果](test-results.md)。本次完整回归已重新执行；之前专项检查的多选/数字持久化跳转、手机号和21条分页结果另有记录，不混入上述94项计数。新增4项UUID测试及1条手机完整流程覆盖HTTP缺少randomUUID/clipboard时的全部创建、填写和修改路径。微信UA与触控由Chrome模拟，没有直接运行iPhone微信或WebKit；用户已报告真实微信可连接，但修复后真机效果仍须重新验证。
+详细结果与历史修复记录见[测试结果](test-results.md)。本次完整回归已重新执行；首次启动验收时本机MongoDB未运行，按README启动项目副本集后重新运行，最终94项与19条均全部通过，不将未实际执行或跳过的轮次计为通过。之前专项检查的多选/数字持久化跳转、手机号和21条分页结果另有记录，不混入上述94项计数。新增4项UUID测试及1条手机完整流程覆盖HTTP缺少randomUUID/clipboard时的全部创建、填写和修改路径。微信UA与触控由Chrome模拟，没有直接运行iPhone微信或WebKit；用户已报告真实微信可连接，但修复后真机效果仍须重新验证。
 
 2026-10-21微信问题复现：点击添加时抛出crypto.randomUUID is not a function。共享uuid.ts改为原生可用则用原生、否则getRandomValues构造UUID v4，统一替换题目、选项、规则、尝试和提交ID；复制按钮在受限环境改为选中链接并提示长按复制，移动提示不再指向“左侧”。此前仅用127.0.0.1完整测试并检查LAN页面加载，遗漏了普通HTTP的API限制；测试入口现可通过PLAYWRIGHT_TEST_ORIGIN切换真实LAN。详见[兼容性核查](browser-compat-audit.md)。
 
 ### 8.2 尚未验证的范围
 
 尚未部署Cloudflare、验证实体手机移动网络扫码、执行全新机器安装、长期负载测试或云端备份恢复。浏览器二维码解码正确不等同公网可访问，10用户并发也不是生产容量证明。当前证据支持本地功能验收，不宣称完成所有部署环境测试。
+
+### 8.3 六类必测内容的步骤、输入与输出
+
+下表摘录仓库中已有自动化用例，便于独立阅读报告；完整案例及复现条件见[测试用例](test-cases.md)。
+
+| 类别 | 步骤与输入 | 预期及已验证结果 |
+| --- | --- | --- |
+| 创建问卷 | 注册登录A，POST /surveys并读取详情；B读取同一问卷 | A得到201、draft及唯一publicId；B得到404 |
+| 添加题目 | 保存单选、多选、文本、数字四类题及规则，刷新读取 | 四类定义完整保留；旧revision保存返回409 |
+| 条件跳转 | 单选跳过必答题；多选命中多条规则；数字输入17、18、60 | 单选走目标；多选按最低priority命中；between包含18和60 |
+| 答案校验 | 整数范围0～120输入0、120、-1、121、1.5；文本2000与2001码点 | 合法边界通过；非法答案被拒绝；2001码点不会被静默截断 |
+| 保存与提交 | 开始填写、保存、恢复、确认；重放同submissionId；关闭后新提交 | 草稿可恢复；重试返回同一凭证且份数不增；新提交410 |
+| 统计结果 | 准备4份submitted和1份草稿；读取统计 | 4份有效，草稿不计；单选A=3/B=1，多选1/2/0，数字平均15 |
+
+原答卷修改专项输入为首次数字2、修改草稿8：确认前平均值仍为2，确认后为8，答卷ID、份数和人数不变。允许重复专项由同一账号提交10和20：得到两个不同答卷ID、2份/1人、平均15。并发专项还覆盖10个账号同时提交及关闭竞争。
 
 ## 9. 遇到的问题及解决方法
 
@@ -391,7 +428,7 @@ AI完成数据结构建议、主要代码、回归测试和文档整理，并通
 
 数据库保存稳定publicId，完整URL由PUBLIC_BASE_URL和/survey/:publicId生成，二维码编码同一URL。更换部署域名无需重写问卷ID，但旧二维码中的域名不会自动变化。
 
-2026-10-21补充：按要求将品牌改为“问笺”，配置HOST=0.0.0.0及PUBLIC_BASE_URL=http://172.25.23.29:3000，允许同一可互访局域网的设备访问。原有账号、问卷及数据库密钥保留，MongoDB仍只监听回环地址。已在本机通过无线IPv4完成页面、API及预检检查，实体手机仍待实测。云服务器不是第一阶段强制要求；Cloudflare方案保留为未来跨网络选项，尚未部署。详见[部署说明](deployment.md)及[plan第11节](../plan.md#11-cloudflare-接入与后续部署)。
+2026-10-21补充：按要求将品牌改为“问笺”，配置HOST=0.0.0.0及PUBLIC_BASE_URL=http://172.25.23.29:3000，允许同一可互访局域网的设备访问。原有账号、问卷及数据库密钥保留，MongoDB仍只监听回环地址。已在本机通过无线IPv4完成页面、API及预检检查，实体手机仍待实测。2026-10-22验收时无线IPv4已变为192.168.1.101，浏览器测试使用相应的3010测试入口；历史局域网IP不是永久访问地址，日常跨设备运行应按当前网络更新入口配置。云服务器不是第一阶段强制要求；Cloudflare方案保留为未来跨网络选项，尚未部署。详见[部署说明](deployment.md)及[plan第11节](../plan.md#11-cloudflare-接入与后续部署)。
 
 ### 11.2 提交材料对应
 
