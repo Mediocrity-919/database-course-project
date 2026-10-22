@@ -6,6 +6,8 @@ apps/web/dist/
 !.env.example
 .local/
 大作业一.docx
+/docs/report-stage1.md
+/output/pdf/
 test-results/
 playwright-report/
 coverage/

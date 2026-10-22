@@ -2,7 +2,7 @@
 
 2026-10-21运行配置补充：网站中文品牌已改为“问笺”；当前启用局域网入口http://172.25.23.29:3000，HOST=0.0.0.0，保留localhost访问及原数据库。已检查WLAN IPv4页面/API并通过两条浏览器流程，实体手机待实测。下文环境模板仍保留可移植的本机默认值，当前电脑的实际局域网设置见README及docs/deployment.md；公网部署状态仍为未执行。
 
-本文依据当前目录中的《大作业一.docx》全文及评分表制定，更新日期为2026年10月20日。本文保留设计理由并同步当前实现，未实施的部署和扩展事项单独标明。运行方法见[README](README.md)，正式完成报告见[report-stage1.md](docs/report-stage1.md)，实际校验与索引见database/schema.ts。
+本文依据当前目录中的《大作业一.docx》全文及评分表制定，更新日期为2026年10月20日。本文保留设计理由并同步当前实现，未实施的部署和扩展事项单独标明。运行方法见[README](README.md)，正式完成报告按最新要求在本地单独交付，不纳入GitHub；实际校验与索引见database/schema.ts。
 
 已实现 **React + TypeScript + Vite前端、Node.js + Express + TypeScript后端、MongoDB数据库**。数据库采用五个集合：`users`、`sessions`、`surveys`、`survey_versions`、`responses`。题目、选项、校验和跳转规则嵌入问卷定义，每份答卷独立存储，发布时保存不可变快照。当前完成本地闭环，URL与二维码已生成；Cloudflare公网接入尚未执行。
 
@@ -970,7 +970,6 @@ Cloudflare 当前将 Workers 作为新项目主要应用平台，已有 Pages �
     test-cases.md
     test-results.md
     ai-log.md
-    report-stage1.md
     stage1-audit.md
     deployment.md
     test-evidence/             实际执行的JSON报告

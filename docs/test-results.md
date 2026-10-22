@@ -190,4 +190,4 @@
 
 实际输出：2码点表情/扩展汉字不截断；1001及2000个表情可草稿保存、恢复、提交并原样读回；含首尾空白和CRLF按规范化后长度判断；2001码点接口返回422、数据库直接写入返回121且不改变原草稿。移动390×844计数提示可见且无横向溢出，.local/qa/unicode-length-mobile.png已实际查看。
 
-最新JSON证据同步到docs/test-evidence/unit-api-results.json和browser-results.json。数据库schema和索引不变，无需数据迁移；本次只修改测试库数据。正式报告已补齐为[report-stage1.md](report-stage1.md)，plan和README已同步。此前“报告缺失”和“文本缺陷未修复”是历史检查结果，已由本节更新；公网部署、实体手机跨网络扫码、干净机器安装及备份恢复仍未执行。
+最新JSON证据同步到docs/test-evidence/unit-api-results.json和browser-results.json。数据库schema和索引不变，无需数据迁移；本次只修改测试库数据。正式报告已补齐，plan和README已同步；按后续要求，报告精简后仅在本地单独交付。此前“报告缺失”和“文本缺陷未修复”是历史检查结果，已由本节更新；公网部署、实体手机跨网络扫码、干净机器安装及备份恢复仍未执行。

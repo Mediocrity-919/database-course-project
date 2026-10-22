@@ -2,23 +2,24 @@
 
 检查日期：2026-10-22（Asia/Shanghai）。
 
-## PDF交付复核
+## 当前交付范围
 
-根据课程提交截图制作`output/pdf/2026_ECNU_PJ1_1_彭欣.pdf`，仓库链接位于首页最前。报告补齐姓名、当前日期、API摘要、六类测试步骤与输入输出，并保留MongoDB设计及AI使用过程说明。PDF正文及全部渲染页面检查通过，中文字体嵌入、链接可点击。
+按最新要求，项目完成报告精简为本地Markdown，删除提交信息，由提交者自行转换PDF。`docs/report-stage1.md`和`output/pdf/`加入忽略规则，并从GitHub当前版本移除；本地文件保留，已有Git历史不重写。
 
-提交前重新执行94项单元/API、19条真实局域网HTTP浏览器流程、类型检查、生产构建及HTTP冒烟，全部通过。新增submission-unit-results.json和submission-browser-results.json；下文“最新完整功能验证为2026-10-21”记录的是此前首次Git整理时的状态，本节为后续最新复核。本次文档及PDF不改变db9388e对应的业务代码基线。
+2026-10-22已重新执行94项单元/API、19条真实局域网HTTP浏览器流程、类型检查、生产构建及HTTP冒烟，全部通过，证据为submission-unit-results.json和submission-browser-results.json。下文“最新完整功能验证为2026-10-21”记录的是此前首次Git整理时的状态。本次精简报告不修改业务代码，无须重复运行功能测试。
 
 目标仓库：`Mediocrity-919/database-course-project`。已通过当前GitHub登录确认归属和推送权限；仓库创建时为空，默认分支为main，可见性为公开。本次保留原可见性。
 
 ## 提交范围
 
-提交源码apps、packages、database、scripts、tests，完整Markdown文档和整理后的JSON测试证据，以及README、plan、依赖锁文件、TypeScript/测试配置、.npmrc、.gitignore及.env.example。
+提交源码apps、packages、database、scripts、tests，系统、数据库、API、测试和AI日志等项目文档，以及JSON测试证据、README、plan、依赖锁文件、TypeScript/测试配置、.npmrc、.gitignore及.env.example。项目完成报告单独交付。
 
 以下内容由.gitignore排除，并已检查暂存区不包含这些文件：
 
 - `.env`及其他真实`.env.*`配置；仅放行`.env.example`。
 - `.local/`：实际MongoDB数据、缓存和临时检查文件。
 - `大作业一.docx`：课程题目原文。
+- `docs/report-stage1.md`和`output/pdf/`：本地报告及其PDF文件。
 - `node_modules/`、`dist/`、`apps/web/dist/`。
 - `test-results/`、`playwright-report/`、`coverage/`、日志和Office临时文件。
 
