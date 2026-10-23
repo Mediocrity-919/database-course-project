@@ -6,6 +6,8 @@ apps/web/dist/
 !.env.example
 .local/
 大作业一.docx
+大作业一：需求变更.docx
+/2026_ECNU_PJ1_*.pdf*
 /docs/report-stage1.md
 /output/pdf/
 test-results/
