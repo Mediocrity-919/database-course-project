@@ -1,0 +1,103 @@
+{
+  "database": "questionnaire_test",
+  "generatedAt": "2026-10-28T10:20:15.494Z",
+  "counts": {
+    "users": 4,
+    "sessions": 4,
+    "surveys": 4,
+    "survey_versions": 2,
+    "responses": 3,
+    "question_banks": 1,
+    "question_families": 2,
+    "question_versions": 4
+  },
+  "checks": [
+    {
+      "id": "collections",
+      "title": "八个集合存在，validator与schema.ts一致且为strict/error",
+      "level": "error",
+      "checked": 8,
+      "problems": []
+    },
+    {
+      "id": "indexes",
+      "title": "唯一索引、TTL、部分唯一索引及查询索引齐全",
+      "level": "error",
+      "checked": 18,
+      "problems": []
+    },
+    {
+      "id": "documents",
+      "title": "所有已存文档满足当前validator（含二期收紧后的规则）",
+      "level": "error",
+      "checked": 24,
+      "problems": []
+    },
+    {
+      "id": "users",
+      "title": "用户名规范化字段一致（唯一性由唯一索引保证）",
+      "level": "error",
+      "checked": 4,
+      "problems": []
+    },
+    {
+      "id": "surveys",
+      "title": "问卷状态、草稿、发布入口、标题冗余及归属一致",
+      "level": "error",
+      "checked": 4,
+      "problems": []
+    },
+    {
+      "id": "survey_versions",
+      "title": "发布快照归属问卷存在、创建者为问卷所有者",
+      "level": "error",
+      "checked": 2,
+      "problems": []
+    },
+    {
+      "id": "definitions",
+      "title": "草稿与发布定义可被当前业务规则重新解析（跳转目标、选项、校验）",
+      "level": "warning",
+      "checked": 4,
+      "problems": []
+    },
+    {
+      "id": "responses",
+      "title": "答卷引用的问卷/发布版本、题目ID、题型与冻结策略一致",
+      "level": "error",
+      "checked": 3,
+      "problems": []
+    },
+    {
+      "id": "question_banks",
+      "title": "题库所有者存在",
+      "level": "error",
+      "checked": 1,
+      "problems": []
+    },
+    {
+      "id": "question_families",
+      "title": "题目系列：版本号1..n连续、versionCount、latest指针、共享用户与题库归属一致",
+      "level": "error",
+      "checked": 2,
+      "problems": []
+    },
+    {
+      "id": "question_versions",
+      "title": "题目版本：系列存在、作者一致、父版本/恢复来源存在且早于本版本、内容无跳转与来源",
+      "level": "error",
+      "checked": 4,
+      "problems": []
+    },
+    {
+      "id": "sources",
+      "title": "问卷题目source指向存在的题目版本，系列匹配且核心内容一致，同卷不重复引用",
+      "level": "error",
+      "checked": 4,
+      "problems": []
+    }
+  ],
+  "errors": 0,
+  "warnings": 0,
+  "ok": true
+}

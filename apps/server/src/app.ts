@@ -17,6 +17,7 @@ import type { Config } from "./config.js";
 import type { Database } from "./database.js";
 import { hash, objectId, publicSurvey, SurveyService } from "./service.js";
 import { passwordIssues } from "../../../packages/shared/src/auth.js";
+import { LibraryService, pageSchema, scopeSchema } from "./library.js";
 
 const revisionSchema = z.object({ revision: z.number().int().positive() });
 export function createApp(d: Database, cfg: Config) {
@@ -113,6 +114,99 @@ export function createApp(d: Database, cfg: Config) {
     })
     .strict();
   const api = express.Router();
+  const library = new LibraryService(d);
+  api.get("/question-banks", auth, async (_req, res) =>
+    res.json({
+      items: await library.banks
+        .find({ ownerId: res.locals.user._id })
+        .sort({ updatedAt: -1 })
+        .toArray(),
+    }),
+  );
+  api.post("/question-banks", auth, async (req, res) =>
+    res.status(201).json(await library.saveBank(res.locals.user._id, req.body)),
+  );
+  api.put("/question-banks/:id", auth, async (req, res) =>
+    res.json(
+      await library.saveBank(
+        res.locals.user._id,
+        req.body,
+        String(req.params.id),
+      ),
+    ),
+  );
+  api.get("/library/questions", auth, async (req, res) =>
+    res.json(
+      await library.list(
+        res.locals.user._id,
+        pageSchema.parse(req.query.page),
+        req.query.bankId ? String(req.query.bankId) : undefined,
+      ),
+    ),
+  );
+  api.post("/library/questions", auth, async (req, res) =>
+    res.status(201).json(await library.create(res.locals.user._id, req.body)),
+  );
+  api.get("/library/questions/:id", auth, async (req, res) =>
+    res.json(
+      await library.detail(
+        String(req.params.id),
+        res.locals.user._id,
+        pageSchema.parse(req.query.page),
+      ),
+    ),
+  );
+  api.put("/library/questions/:id/access", auth, async (req, res) =>
+    res.json(
+      await library.configure(
+        String(req.params.id),
+        res.locals.user._id,
+        req.body,
+      ),
+    ),
+  );
+  api.get("/library/versions/:id", auth, async (req, res) =>
+    res.json(
+      await library
+        .version(String(req.params.id), res.locals.user._id)
+        .then((x) => ({ version: x.version })),
+    ),
+  );
+  api.post("/library/versions/:id/derive", auth, async (req, res) =>
+    res
+      .status(201)
+      .json(
+        await library.newVersion(
+          String(req.params.id),
+          res.locals.user._id,
+          req.body,
+        ),
+      ),
+  );
+  api.post("/library/versions/:id/import", auth, async (req, res) =>
+    res.json(
+      await library.importVersion(String(req.params.id), res.locals.user._id),
+    ),
+  );
+  api.get("/library/versions/:id/usage", auth, async (req, res) =>
+    res.json(
+      await library.usage(
+        String(req.params.id),
+        res.locals.user._id,
+        scopeSchema.parse(req.query.scope),
+      ),
+    ),
+  );
+  api.get("/library/versions/:id/stats", auth, async (req, res) =>
+    res.json(
+      await library.stats(
+        String(req.params.id),
+        res.locals.user._id,
+        pageSchema.parse(req.query.page),
+        scopeSchema.parse(req.query.scope),
+      ),
+    ),
+  );
   api.get("/health", async (_req, res) => {
     await d.db.command({ ping: 1 });
     res.json({ status: "ok" });
@@ -273,19 +367,21 @@ export function createApp(d: Database, cfg: Config) {
       ),
       def = structuredClone(original.definition);
     const ids = new Map<string, string>();
+    for (const q of def.questions) ids.set(q.id, randomUUID());
     for (const q of def.questions) {
-      ids.set(q.id, randomUUID());
-      for (const o of q.options ?? []) ids.set(o.id, randomUUID());
-    }
-    for (const q of def.questions) {
+      // Option IDs are scoped to a question. A detached copy can still have the
+      // same IDs as a library instance; never let its remapping change that instance.
+      const options = new Map(
+        (q.options ?? []).map((o) => [o.id, q.source ? o.id : randomUUID()]),
+      );
       q.id = ids.get(q.id)!;
-      for (const o of q.options ?? []) o.id = ids.get(o.id)!;
+      for (const o of q.options ?? []) o.id = options.get(o.id)!;
       for (const r of q.logic.rules) {
         r.id = randomUUID();
         if (typeof r.when.value === "string")
-          r.when.value = ids.get(r.when.value)!;
+          r.when.value = options.get(r.when.value)!;
         if (Array.isArray(r.when.value))
-          r.when.value = r.when.value.map((x) => ids.get(x)!);
+          r.when.value = r.when.value.map((x) => options.get(x)!);
         if (r.then.targetQuestionId)
           r.then.targetQuestionId = ids.get(r.then.targetQuestionId);
       }

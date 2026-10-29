@@ -1,0 +1,865 @@
+{
+  "generatedAt": "2026-10-28T12:17:48.405Z",
+  "branch": "v2",
+  "mainBaseline": "cd7e6d874534c3284e35d39dde9c8bfabc086b74",
+  "unit": {
+    "total": 128,
+    "passed": 128,
+    "failed": 0,
+    "skipped": 0,
+    "files": [
+      {
+        "file": "acceptance.test.ts",
+        "cases": [
+          {
+            "name": "一键验收的失败保护 失败步骤 'run db:backup' 后不运行依赖步骤",
+            "status": "passed"
+          },
+          {
+            "name": "一键验收的失败保护 失败步骤 'run build' 后不运行依赖步骤",
+            "status": "passed"
+          },
+          {
+            "name": "一键验收的失败保护 失败步骤 '' 后不运行依赖步骤",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "api.test.ts",
+        "cases": [
+          {
+            "name": "文本长度跨层一致性 1001个表情可保存草稿、恢复和正式提交",
+            "status": "passed"
+          },
+          {
+            "name": "文本长度跨层一致性 2000个表情可保存草稿、恢复和正式提交",
+            "status": "passed"
+          },
+          {
+            "name": "文本长度跨层一致性 API按规范化后的2000码点校验，数据库保存规范化文本",
+            "status": "passed"
+          },
+          {
+            "name": "文本长度跨层一致性 自定义2字符上限允许两个表情，拒绝三个且不产生半提交",
+            "status": "passed"
+          },
+          {
+            "name": "文本长度跨层一致性 2001码点被草稿和提交API拒绝，MongoDB直接写入也拒绝",
+            "status": "passed"
+          },
+          {
+            "name": "账号、数据隔离与HTTP边界 用户名大小写唯一，密码不以明文保存",
+            "status": "passed"
+          },
+          {
+            "name": "账号、数据隔离与HTTP边界 错误密码与未登录被拒绝",
+            "status": "passed"
+          },
+          {
+            "name": "账号、数据隔离与HTTP边界 不允许外站Origin或缺少CSRF",
+            "status": "passed"
+          },
+          {
+            "name": "账号、数据隔离与HTTP边界 TTL尚未清理的过期会话也不可用",
+            "status": "passed"
+          },
+          {
+            "name": "账号、数据隔离与HTTP边界 关闭不存在API时返回JSON404",
+            "status": "passed"
+          },
+          {
+            "name": "账号、数据隔离与HTTP边界 公开简介不泄露草稿、身份或统计",
+            "status": "passed"
+          },
+          {
+            "name": "账号、数据隔离与HTTP边界 他人不能查看、关闭、统计或修改问卷",
+            "status": "passed"
+          },
+          {
+            "name": "创建、发布、校验与保存 四种题型配置持久化，过期revision不能覆盖",
+            "status": "passed"
+          },
+          {
+            "name": "创建、发布、校验与保存 非法跳转定义不能保存",
+            "status": "passed"
+          },
+          {
+            "name": "创建、发布、校验与保存 发布快照不可修改，发布重试不产生第二版本",
+            "status": "passed"
+          },
+          {
+            "name": "创建、发布、校验与保存 复制问卷生成新的问卷题目选项ID，保留规则引用",
+            "status": "passed"
+          },
+          {
+            "name": "创建、发布、校验与保存 禁止创建未发布问卷的尝试",
+            "status": "passed"
+          },
+          {
+            "name": "创建、发布、校验与保存 草稿刷新恢复，旧revision保存失败",
+            "status": "passed"
+          },
+          {
+            "name": "创建、发布、校验与保存 单选跳转跳过必答题，隐藏题和非法数字被后端拒绝",
+            "status": "passed"
+          },
+          {
+            "name": "创建、发布、校验与保存 开始填写请求幂等，别人不能读取我的答卷",
+            "status": "passed"
+          },
+          {
+            "name": "提交、修改与并发一致性 提交幂等，同一请求更换内容时冲突；关闭后重试仍返回成功",
+            "status": "passed"
+          },
+          {
+            "name": "提交、修改与并发一致性 同一次提交的并发请求返回同一答卷",
+            "status": "passed"
+          },
+          {
+            "name": "提交、修改与并发一致性 禁止重复时两个尝试并发只成功一个",
+            "status": "passed"
+          },
+          {
+            "name": "提交、修改与并发一致性 允许重复时增加份数，去重人数不增加",
+            "status": "passed"
+          },
+          {
+            "name": "提交、修改与并发一致性 修改原答卷不增加份数，草稿不污染统计，确认后平均值更新",
+            "status": "passed"
+          },
+          {
+            "name": "提交、修改与并发一致性 修改前题后必须清除不再可达的答案",
+            "status": "passed"
+          },
+          {
+            "name": "提交、修改与并发一致性 提交后旧自动保存不可覆盖；修改流程受策略与截止限制",
+            "status": "passed"
+          },
+          {
+            "name": "提交、修改与并发一致性 关闭和截止阻止新提交且不留下半提交",
+            "status": "passed"
+          },
+          {
+            "name": "提交、修改与并发一致性 关闭与提交并发仅有合法顺序",
+            "status": "passed"
+          },
+          {
+            "name": "提交、修改与并发一致性 10人并发提交无丢失",
+            "status": "passed"
+          },
+          {
+            "name": "匿名、统计与数据库约束 匿名答卷不向创建者泄露内部身份",
+            "status": "passed"
+          },
+          {
+            "name": "匿名、统计与数据库约束 不允许匿名时拒绝伪造匿名并保留实名账号",
+            "status": "passed"
+          },
+          {
+            "name": "匿名、统计与数据库约束 无人作答时计数为0、选项保留、平均值为null",
+            "status": "passed"
+          },
+          {
+            "name": "匿名、统计与数据库约束 统计固定数据：份数、人数、跳过、未填、数字和文本",
+            "status": "passed"
+          },
+          {
+            "name": "匿名、统计与数据库约束 MongoDB拒绝错误BSON类型与匿名身份泄漏",
+            "status": "passed"
+          },
+          {
+            "name": "匿名、统计与数据库约束 事务抛错后所有写入回滚",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "auth.test.ts",
+        "cases": [
+          {
+            "name": "注册密码的共享规则 密码 \"abc12345\" 只提示实际缺少项",
+            "status": "passed"
+          },
+          {
+            "name": "注册密码的共享规则 密码 \"ABC12345\" 只提示实际缺少项",
+            "status": "passed"
+          },
+          {
+            "name": "注册密码的共享规则 密码 \"Abcdefgh\" 只提示实际缺少项",
+            "status": "passed"
+          },
+          {
+            "name": "注册密码的共享规则 密码 \"Ab1\" 只提示实际缺少项",
+            "status": "passed"
+          },
+          {
+            "name": "注册密码的共享规则 密码 \"abcdefgh\" 只提示实际缺少项",
+            "status": "passed"
+          },
+          {
+            "name": "注册密码的共享规则 密码 \"12345678\" 只提示实际缺少项",
+            "status": "passed"
+          },
+          {
+            "name": "注册密码的共享规则 密码 \"\" 只提示实际缺少项",
+            "status": "passed"
+          },
+          {
+            "name": "注册密码的共享规则 密码 \"Valid123\" 只提示实际缺少项",
+            "status": "passed"
+          },
+          {
+            "name": "注册密码的共享规则 密码 \" Valid1 \" 只提示实际缺少项",
+            "status": "passed"
+          },
+          {
+            "name": "注册密码的共享规则 拒绝超过128字符，但允许128字符边界",
+            "status": "passed"
+          },
+          {
+            "name": "注册密码的共享规则 前端逐项提示与后端校验共享同一判断",
+            "status": "passed"
+          },
+          {
+            "name": "登录先检查用户名，注册强制密码规则 用户名不存在时即使密码较短也先提示创建账号",
+            "status": "passed"
+          },
+          {
+            "name": "登录先检查用户名，注册强制密码规则 直接调用注册接口也拒绝不符合规则的密码 abc12345",
+            "status": "passed"
+          },
+          {
+            "name": "登录先检查用户名，注册强制密码规则 直接调用注册接口也拒绝不符合规则的密码 ABC12345",
+            "status": "passed"
+          },
+          {
+            "name": "登录先检查用户名，注册强制密码规则 直接调用注册接口也拒绝不符合规则的密码 Abcdefgh",
+            "status": "passed"
+          },
+          {
+            "name": "登录先检查用户名，注册强制密码规则 直接调用注册接口也拒绝不符合规则的密码 Ab1",
+            "status": "passed"
+          },
+          {
+            "name": "登录先检查用户名，注册强制密码规则 直接调用注册接口也拒绝不符合规则的密码 abcdefgh",
+            "status": "passed"
+          },
+          {
+            "name": "登录先检查用户名，注册强制密码规则 合规密码可注册，用户名不区分大小写，错误密码单独提示",
+            "status": "passed"
+          },
+          {
+            "name": "登录先检查用户名，注册强制密码规则 旧账号密码仍可登录，不用注册新规则锁住已有账号",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "domain.test.ts",
+        "cases": [
+          {
+            "name": "问卷定义与校验 接受四种题型与有效跳转",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝空问卷发布，允许保存空草稿",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝重复题目ID",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝前向循环与不存在目标",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝数量min>max和超过选项数",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝同优先级规则",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝重复填写同时启用原答卷编辑",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝非法操作符、悬空选项及不适用的校验字段",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝空的整数范围",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 文本长度按Unicode码点，规范化首尾与换行",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 答案请求与业务校验均接受2000码点并拒绝2001码点",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 请求上限与界面计数在去除首尾空白及规范化换行之后判断",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 数字0合法，空字符串不转换成0",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝非法年龄 -1",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝非法年龄 121",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝非法年龄 1.5",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝非法年龄 Infinity",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝非法年龄 NaN",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 拒绝非法年龄 9007199254740992",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 接受年龄上下边界与可选题空答案",
+            "status": "passed"
+          },
+          {
+            "name": "问卷定义与校验 多选拒绝重复选项、少选和超选",
+            "status": "passed"
+          },
+          {
+            "name": "数据驱动的跳转与路径重放 单选跳过必答题，后端仅校验实际经过的题",
+            "status": "passed"
+          },
+          {
+            "name": "数据驱动的跳转与路径重放 必答缺失、重复答案、未知题目、隐藏旧答案均拒绝",
+            "status": "passed"
+          },
+          {
+            "name": "数据驱动的跳转与路径重放 多选同时命中时使用最低priority",
+            "status": "passed"
+          },
+          {
+            "name": "数据驱动的跳转与路径重放 多选集合操作 contains_any 不受顺序影响",
+            "status": "passed"
+          },
+          {
+            "name": "数据驱动的跳转与路径重放 多选集合操作 contains_all 不受顺序影响",
+            "status": "passed"
+          },
+          {
+            "name": "数据驱动的跳转与路径重放 多选集合操作 equals_set 不受顺序影响",
+            "status": "passed"
+          },
+          {
+            "name": "数据驱动的跳转与路径重放 数字闭区间和边界比较",
+            "status": "passed"
+          },
+          {
+            "name": "数据驱动的跳转与路径重放 草稿不要求所有必答题已完成",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "library.test.ts",
+        "cases": [
+          {
+            "name": "二期：独立题目、共享和题库 可独立创建single_choice，不携带问卷跳转目标",
+            "status": "passed"
+          },
+          {
+            "name": "二期：独立题目、共享和题库 可独立创建multiple_choice，不携带问卷跳转目标",
+            "status": "passed"
+          },
+          {
+            "name": "二期：独立题目、共享和题库 可独立创建text，不携带问卷跳转目标",
+            "status": "passed"
+          },
+          {
+            "name": "二期：独立题目、共享和题库 可独立创建number，不携带问卷跳转目标",
+            "status": "passed"
+          },
+          {
+            "name": "二期：独立题目、共享和题库 题库创建、改名、归属增删、筛选、并发和越权保护",
+            "status": "passed"
+          },
+          {
+            "name": "二期：独立题目、共享和题库 共享双方均可使用，接收者不可改原题；可另存自己名下并记录来源",
+            "status": "passed"
+          },
+          {
+            "name": "二期：独立题目、共享和题库 撤销后禁止新导入，但已经保存的草稿仍可编辑、发布和作答",
+            "status": "passed"
+          },
+          {
+            "name": "二期：不可变版本、历史和来源 复制混合single_choice问卷时，各题选项映射独立且跳转有效",
+            "status": "passed"
+          },
+          {
+            "name": "二期：不可变版本、历史和来源 复制混合multiple_choice问卷时，各题选项映射独立且跳转有效",
+            "status": "passed"
+          },
+          {
+            "name": "二期：不可变版本、历史和来源 改题后旧版本、发布快照及旧答卷完全不变；复制问卷保留来源和选项ID",
+            "status": "passed"
+          },
+          {
+            "name": "二期：不可变版本、历史和来源 从旧版派生和恢复均追加版本，保存准确父链",
+            "status": "passed"
+          },
+          {
+            "name": "二期：不可变版本、历史和来源 同revision并发改题只成功一次，不产生孤立版本",
+            "status": "passed"
+          },
+          {
+            "name": "二期：不可变版本、历史和来源 拒绝伪造来源、改变核心内容、重复版本；支持大小写ID规范化",
+            "status": "passed"
+          },
+          {
+            "name": "二期：不可变版本、历史和来源 引用的题目仍可配置问卷内跳转，脱离后可作为新题目",
+            "status": "passed"
+          },
+          {
+            "name": "二期：不可变版本、历史和来源 历史分页稳定，无遗漏或重复；跨页旧版本仍可选择",
+            "status": "passed"
+          },
+          {
+            "name": "二期：跨问卷统计和隐私边界 年龄统计按确切版本汇总，仅纳入本人和明确授权的问卷",
+            "status": "passed"
+          },
+          {
+            "name": "二期：跨问卷统计和隐私边界 不同版本分别统计，无来源旧题不自动合并",
+            "status": "passed"
+          },
+          {
+            "name": "二期：跨问卷统计和隐私边界 未回答或被跳过不计入分母，未提交草稿不计入",
+            "status": "passed"
+          },
+          {
+            "name": "二期：跨问卷统计和隐私边界 修改答卷草稿不改变统计，重新提交后替换旧值且不增加份数",
+            "status": "passed"
+          },
+          {
+            "name": "二期：跨问卷统计和隐私边界 single_choice按选项ID计数，回答分母正确",
+            "status": "passed"
+          },
+          {
+            "name": "二期：跨问卷统计和隐私边界 multiple_choice按选项ID计数，回答分母正确",
+            "status": "passed"
+          },
+          {
+            "name": "二期：跨问卷统计和隐私边界 外部授权文本只贡献数量；本人文本分页不泄露原文或参与者标识",
+            "status": "passed"
+          },
+          {
+            "name": "二期：整道题跨问卷汇总（全部版本合计） “你的年龄”多版本分布在多份问卷：合计全部同题型版本，并按版本拆分",
+            "status": "passed"
+          },
+          {
+            "name": "二期：整道题跨问卷汇总（全部版本合计） single_choice跨版本仅合并ID和文字均相同的选项，改名不改变历史统计",
+            "status": "passed"
+          },
+          {
+            "name": "二期：整道题跨问卷汇总（全部版本合计） multiple_choice跨版本仅合并ID和文字均相同的选项，改名不改变历史统计",
+            "status": "passed"
+          },
+          {
+            "name": "二期：整道题跨问卷汇总（全部版本合计） 跨卷统计的首个$match条件以surveyId开头，可命中答卷索引（IXSCAN）",
+            "status": "passed"
+          },
+          {
+            "name": "二期：接口与数据库约束 新接口均需登录及CSRF，并校验空题、非法版本和参数",
+            "status": "passed"
+          },
+          {
+            "name": "二期：接口与数据库约束 新集合具备校验、唯一版本约束和查询索引；旧结构可继续写入",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "progress.test.ts",
+        "cases": [
+          {
+            "name": "填写导航的有效保存前缀 有效答案规范化后全部保存，刷新可恢复",
+            "status": "passed"
+          },
+          {
+            "name": "填写导航的有效保存前缀 后续无效输入保留在页面，不阻止返回该题修正",
+            "status": "passed"
+          },
+          {
+            "name": "填写导航的有效保存前缀 修正未完成输入后恢复后续有效答案的保存",
+            "status": "passed"
+          },
+          {
+            "name": "填写导航的有效保存前缀 更改分支后移除已跳过的无效输入，允许提前结束",
+            "status": "passed"
+          },
+          {
+            "name": "填写导航的有效保存前缀 新路径遇到未填必答题时保留后面的页面输入，但不向服务器发送",
+            "status": "passed"
+          },
+          {
+            "name": "填写导航的有效保存前缀 空的选答题可略过，后续有效答案仍保存",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "uuid.test.ts",
+        "cases": [
+          {
+            "name": "局域网HTTP的UUID兼容 有原生randomUUID时正常调用",
+            "status": "passed"
+          },
+          {
+            "name": "局域网HTTP的UUID兼容 缺少randomUUID时生成符合UUID v4格式及版本/变体的标识",
+            "status": "passed"
+          },
+          {
+            "name": "局域网HTTP的UUID兼容 真实安全随机数回退可连续生成不同且能通过接口校验的UUID",
+            "status": "passed"
+          },
+          {
+            "name": "局域网HTTP的UUID兼容 缺少安全随机数来源时明确失败，不使用Math.random伪造标识",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "verify.test.ts",
+        "cases": [
+          {
+            "name": "数据库一致性核查（npm run db:verify） 正常接口产生的一期与二期数据：零错误、零提示，覆盖全部集合",
+            "status": "passed"
+          },
+          {
+            "name": "数据库一致性核查（npm run db:verify） 版本计数、孤立版本、被改的发布快照、缺失索引、违规文档都能被定位",
+            "status": "passed"
+          },
+          {
+            "name": "数据库一致性核查（npm run db:verify） 与升级前备份比对：发布快照被改为错误，正常业务更新只作提示",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  "browser": {
+    "stats": {
+      "startTime": "2026-10-28T12:12:43.033Z",
+      "duration": 51530.248,
+      "expected": 26,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "cases": [
+      {
+        "name": "文本恰好2字符：输入表情不截断，超限可修正并提交",
+        "status": "expected"
+      },
+      {
+        "name": "1001个表情可完整输入并提交，2001字符超限可修正",
+        "status": "expected"
+      },
+      {
+        "name": "2000个表情可完整输入并提交，2001字符超限可修正",
+        "status": "expected"
+      },
+      {
+        "name": "恢复实名草稿时页面与数据库身份一致",
+        "status": "expected"
+      },
+      {
+        "name": "恢复匿名草稿时页面与数据库身份一致",
+        "status": "expected"
+      },
+      {
+        "name": "保存等待期间的新编辑保留，必须再次保存后生效",
+        "status": "expected"
+      },
+      {
+        "name": "预览等待期间的新编辑保留，必须再次保存后生效",
+        "status": "expected"
+      },
+      {
+        "name": "发布问卷等待期间的新编辑保留，必须再次保存后生效",
+        "status": "expected"
+      },
+      {
+        "name": "上一题保存当前有效答案，刷新后仍可恢复",
+        "status": "expected"
+      },
+      {
+        "name": "text未完成输入返回前题后仍能进入原题修正",
+        "status": "expected"
+      },
+      {
+        "name": "number未完成输入返回前题后仍能进入原题修正",
+        "status": "expected"
+      },
+      {
+        "name": "multiple_choice未完成输入返回前题后仍能进入原题修正",
+        "status": "expected"
+      },
+      {
+        "name": "首次提交响应丢失后用同一请求重试成功",
+        "status": "expected"
+      },
+      {
+        "name": "修改原答卷响应丢失后用同一请求重试成功",
+        "status": "expected"
+      },
+      {
+        "name": "保存响应丢失后核对服务器内容恢复进度，保存期间输入锁定",
+        "status": "expected"
+      },
+      {
+        "name": "登录不存在的账号引导注册，密码逐项提醒，区分密码错误与用户名重名",
+        "status": "expected"
+      },
+      {
+        "name": "HTTP微信兼容：四类题、选项、跳转、分享、填写及修改在缺少安全上下文API时可用",
+        "status": "expected"
+      },
+      {
+        "name": "题库完整流程：归属、复用两卷、跨卷统计、新旧版本、派生与恢复",
+        "status": "expected"
+      },
+      {
+        "name": "手机HTTP题库选项、替换版本、解除关联和保存刷新",
+        "status": "expected"
+      },
+      {
+        "name": "共享题目的双方使用、接收方只读及另存副本",
+        "status": "expected"
+      },
+      {
+        "name": "编辑器内修改题库题：选择生成新版本并替换，原版本保持",
+        "status": "expected"
+      },
+      {
+        "name": "生成题库新版本期间修改标题、增加题目和排序均保留",
+        "status": "expected"
+      },
+      {
+        "name": "生成题库新版本期间删除原题不会恢复原题",
+        "status": "expected"
+      },
+      {
+        "name": "题库导入等待期间保留新标题和新增题目",
+        "status": "expected"
+      },
+      {
+        "name": "浏览器冒烟：注册、创建四题、发布、二维码、跳题填写、修改、统计、关闭",
+        "status": "expected"
+      },
+      {
+        "name": "浏览器冒烟：允许重复填写时生成新答卷，份数增加但人数保持为1",
+        "status": "expected"
+      }
+    ]
+  },
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "asset": "index-B36AVVfD.js"
+  },
+  "smoke": {
+    "command": "npm run smoke",
+    "exitCode": 0,
+    "scope": "stage1 and stage2 HTTP flows; questionnaire_test only"
+  },
+  "databases": [
+    {
+      "database": "questionnaire_test",
+      "generatedAt": "2026-10-28T12:12:34.821Z",
+      "counts": {
+        "users": 4,
+        "sessions": 4,
+        "surveys": 4,
+        "survey_versions": 2,
+        "responses": 3,
+        "question_banks": 1,
+        "question_families": 2,
+        "question_versions": 4
+      },
+      "errors": 0,
+      "warnings": 0,
+      "checks": [
+        {
+          "id": "collections",
+          "checked": 8,
+          "problems": 0
+        },
+        {
+          "id": "indexes",
+          "checked": 18,
+          "problems": 0
+        },
+        {
+          "id": "documents",
+          "checked": 24,
+          "problems": 0
+        },
+        {
+          "id": "users",
+          "checked": 4,
+          "problems": 0
+        },
+        {
+          "id": "surveys",
+          "checked": 4,
+          "problems": 0
+        },
+        {
+          "id": "survey_versions",
+          "checked": 2,
+          "problems": 0
+        },
+        {
+          "id": "definitions",
+          "checked": 4,
+          "problems": 0
+        },
+        {
+          "id": "responses",
+          "checked": 3,
+          "problems": 0
+        },
+        {
+          "id": "question_banks",
+          "checked": 1,
+          "problems": 0
+        },
+        {
+          "id": "question_families",
+          "checked": 2,
+          "problems": 0
+        },
+        {
+          "id": "question_versions",
+          "checked": 4,
+          "problems": 0
+        },
+        {
+          "id": "sources",
+          "checked": 4,
+          "problems": 0
+        }
+      ]
+    },
+    {
+      "database": "questionnaire_stage1",
+      "generatedAt": "2026-10-28T12:15:04.034Z",
+      "counts": {
+        "users": 2,
+        "sessions": 0,
+        "surveys": 6,
+        "survey_versions": 2,
+        "responses": 1,
+        "question_banks": 0,
+        "question_families": 0,
+        "question_versions": 0
+      },
+      "errors": 0,
+      "warnings": 0,
+      "checks": [
+        {
+          "id": "collections",
+          "checked": 8,
+          "problems": 0
+        },
+        {
+          "id": "indexes",
+          "checked": 18,
+          "problems": 0
+        },
+        {
+          "id": "documents",
+          "checked": 11,
+          "problems": 0
+        },
+        {
+          "id": "users",
+          "checked": 2,
+          "problems": 0
+        },
+        {
+          "id": "surveys",
+          "checked": 6,
+          "problems": 0
+        },
+        {
+          "id": "survey_versions",
+          "checked": 2,
+          "problems": 0
+        },
+        {
+          "id": "definitions",
+          "checked": 6,
+          "problems": 0
+        },
+        {
+          "id": "responses",
+          "checked": 1,
+          "problems": 0
+        },
+        {
+          "id": "question_banks",
+          "checked": 0,
+          "problems": 0
+        },
+        {
+          "id": "question_families",
+          "checked": 0,
+          "problems": 0
+        },
+        {
+          "id": "question_versions",
+          "checked": 0,
+          "problems": 0
+        },
+        {
+          "id": "sources",
+          "checked": 0,
+          "problems": 0
+        },
+        {
+          "id": "baseline",
+          "checked": 11,
+          "problems": 0
+        },
+        {
+          "id": "baseline_changes",
+          "checked": 0,
+          "problems": 0
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Chrome on loopback HTTP, not physical WeChat",
+    "No cloud deployment or backup restore rehearsal",
+    "No full clean-machine installation",
+    "Acceptance failure paths tested with mock commands in an isolated temporary project"
+  ]
+}

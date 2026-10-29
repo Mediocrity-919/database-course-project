@@ -39,7 +39,7 @@ try {
       console.log("演示问卷已创建，账号 demo；密码使用提供的 DEMO_PASSWORD");
     } else console.log("演示账号和问卷已存在，不重复导入");
   }
-  console.log("五个集合、数据库校验与索引已就绪");
+  console.log("八个集合、数据库校验与索引已就绪（兼容第一阶段数据）");
 } finally {
   await d.client.close();
 }

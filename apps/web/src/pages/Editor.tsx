@@ -34,6 +34,9 @@ import {
   PageTitle,
 } from "../ui.js";
 import { Runner } from "../components/Runner.js";
+import { LibraryPicker } from "../components/LibraryPicker.js";
+import { QuestionForm } from "../components/QuestionForm.js";
+import { sameCore } from "../../../../packages/shared/src/library.js";
 import { createUuid } from "../uuid.js";
 const titles: Record<QuestionType, string> = {
   single_choice: "单选题",
@@ -47,7 +50,7 @@ const icons = {
   text: Type,
   number: Hash,
 };
-function createQuestion(type: QuestionType, order: number): Question {
+export function createQuestion(type: QuestionType, order: number): Question {
   return {
     id: createUuid(),
     order,
@@ -92,11 +95,21 @@ export function Editor({ preview = false }: { preview?: boolean }) {
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState(""),
     [dirty, setDirty] = useState(false),
-    [previewDone, setPreviewDone] = useState(false);
+    [previewDone, setPreviewDone] = useState(false),
+    [sourceEdit, setSourceEdit] = useState<{
+      id: string;
+      content: Question;
+    } | null>(null);
   const editSequence = useRef(0);
+  // Async imports must apply to the current draft, not the render that started them.
+  const latestDef = useRef<Definition | null>(null);
+  const setDefinition = (next: Definition) => {
+    latestDef.current = next;
+    setDef(next);
+  };
   useEffect(() => {
     if (data) {
-      setDef(data.definition);
+      setDefinition(data.definition);
       setRevision(data.revision);
       setDeadline(localTime(data.deadlineAt));
       setSelected(data.definition.questions[0]?.id ?? "");
@@ -117,7 +130,7 @@ export function Editor({ preview = false }: { preview?: boolean }) {
     return error ? <ErrorBox message={error} /> : <Loading />;
   const update = (next: Definition) => {
     editSequence.current++;
-    setDef(next);
+    setDefinition(next);
     setDirty(true);
     setMessage("");
   };
@@ -128,9 +141,74 @@ export function Editor({ preview = false }: { preview?: boolean }) {
       questions: def.questions.map((q) => (q.id === next.id ? next : q)),
     });
   const add = (type: QuestionType) => {
+    if (def.questions.length >= 100) {
+      setMessage("每份问卷最多100道题目");
+      return;
+    }
     const q = createQuestion(type, def.questions.length + 1);
     update({ ...def, questions: [...def.questions, q] });
     setSelected(q.id);
+  };
+  const useLibraryQuestion = (next: Question, replaced?: Question) => {
+    const current = latestDef.current!;
+    if (
+      current.questions.some(
+        (t) =>
+          t.id !== replaced?.id &&
+          t.source?.versionId === next.source?.versionId,
+      )
+    )
+      throw new Error("此版本已在本问卷中使用，请选择其他版本");
+    if (!replaced && current.questions.length >= 100)
+      throw new Error("每份问卷最多100道题目");
+    if (replaced) {
+      if (
+        !confirm(
+          "替换会重置此题的条件跳转。其他题目指向此题的跳转会保留，是否继续？",
+        )
+      )
+        return;
+      replaceQuestion(replaced, { ...next, order: replaced.order });
+    } else {
+      update({
+        ...current,
+        questions: [
+          ...current.questions,
+          { ...next, order: current.questions.length + 1 },
+        ],
+      });
+      setSelected(next.id);
+    }
+  };
+  const replaceQuestion = (old: Question, next: Question) => {
+    const current = latestDef.current!;
+    const target = current.questions.find((t) => t.id === old.id);
+    if (!target || target.source?.versionId !== old.source?.versionId)
+      throw new Error(
+        "原题已删除或替换，本次未修改问卷；已创建的版本仍可在题库中选择。",
+      );
+    if (
+      next.source &&
+      current.questions.some(
+        (t) =>
+          t.id !== old.id && t.source?.versionId === next.source!.versionId,
+      )
+    )
+      throw new Error("此版本已在本问卷中使用，请选择其他版本");
+    const redirect = (a: Action): Action =>
+      a.targetQuestionId === old.id ? { ...a, targetQuestionId: next.id } : a;
+    const questions = current.questions
+      .map((t) => (t.id === old.id ? { ...next, order: t.order } : t))
+      .map((t) => ({
+        ...t,
+        logic: {
+          ...t.logic,
+          defaultAction: redirect(t.logic.defaultAction),
+          rules: t.logic.rules.map((r) => ({ ...r, then: redirect(r.then) })),
+        },
+      }));
+    update({ ...current, questions });
+    setSelected((selectedId) => (selectedId === old.id ? next.id : selectedId));
   };
   const save = async () => {
     setMessage("");
@@ -149,7 +227,7 @@ export function Editor({ preview = false }: { preview?: boolean }) {
       setMessage("之前的内容已保存，新增修改尚未保存，请再次保存。");
       return null;
     }
-    setDef(saved.draft);
+    setDefinition(saved.draft);
     setDirty(false);
     return saved;
   };
@@ -365,6 +443,22 @@ export function Editor({ preview = false }: { preview?: boolean }) {
             )}
           </div>
         </div>
+        <label className="inline-check library-consent">
+          <input
+            type="checkbox"
+            checked={def.settings.shareLibraryStatistics ?? false}
+            onChange={(e) =>
+              update({
+                ...def,
+                settings: {
+                  ...def.settings,
+                  shareLibraryStatistics: e.target.checked,
+                },
+              })
+            }
+          />
+          允许题目作者查看本问卷名称及题库题目的汇总统计（不共享填写者身份或文本原文）
+        </label>
       </section>
       <div className="editor-layout">
         <aside className="panel question-directory">
@@ -400,6 +494,15 @@ export function Editor({ preview = false }: { preview?: boolean }) {
               );
             })}
           </div>
+          <LibraryPicker onSelect={(next) => useLibraryQuestion(next)} />
+          <Link
+            className="text-button"
+            to="/library"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            管理我的题库
+          </Link>
         </aside>
         <section className="panel question-config">
           {q ? (
@@ -465,200 +568,354 @@ export function Editor({ preview = false }: { preview?: boolean }) {
                   </button>
                 </div>
               </div>
-              <label>
-                题目标题
-                <input
-                  aria-label="题目标题"
-                  value={q.title}
-                  onFocus={(e) => {
-                    if (
-                      Object.values(titles).some(
-                        (title) => q.title === `新${title}`,
-                      )
-                    )
-                      e.currentTarget.select();
-                  }}
-                  onChange={(e) => patchQ({ ...q, title: e.target.value })}
-                />
-              </label>
-              <div className="form-row">
-                <label>
-                  题型
-                  <select
-                    value={q.type}
-                    onChange={(e) => {
-                      const next = createQuestion(
-                        e.target.value as QuestionType,
-                        q.order,
-                      );
-                      patchQ({
-                        ...next,
-                        id: q.id,
-                        title: q.title,
-                        description: q.description,
-                      });
+              <div className="library-source">
+                {q.source ? (
+                  <>
+                    <p>
+                      此题来自题库，绑定固定版本。需要修改时可以选择：保存为题库新版本（原版本和已用它的问卷不变），或解除关联只改本问卷；跳转规则可在本问卷单独设置。
+                    </p>
+                    <Button
+                      variant="secondary"
+                      disabled={busy}
+                      onClick={() =>
+                        setSourceEdit({ id: q.id, content: structuredClone(q) })
+                      }
+                    >
+                      修改内容并保存为题库新版本
+                    </Button>
+                    <LibraryPicker
+                      key={q.id}
+                      label="替换为题库中的版本"
+                      onSelect={(next) => useLibraryQuestion(next, q)}
+                    />
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        if (
+                          !confirm(
+                            "解除关联后将成为新题目，不再计入原版本的跨问卷统计，是否继续？",
+                          )
+                        )
+                          return;
+                        const next = {
+                          ...structuredClone(q),
+                          id: createUuid(),
+                        };
+                        delete next.source;
+                        replaceQuestion(q, next);
+                      }}
+                    >
+                      解除关联并编辑副本
+                    </Button>
+                    {sourceEdit?.id === q.id && (
+                      <div className="library-source-edit">
+                        <p className="muted">
+                          保存后在题库生成新版本并用它替换本题（本题跳转会重置）。原版本、其他问卷和已收集的答卷都保持不变。共享给你的题目会另存为你名下的新题目。
+                        </p>
+                        <fieldset className="question-core" disabled={busy}>
+                          <QuestionForm
+                            value={sourceEdit.content}
+                            onChange={(content) =>
+                              setSourceEdit({ id: q.id, content })
+                            }
+                          />
+                        </fieldset>
+                        <div className="title-actions">
+                          <Button
+                            disabled={busy}
+                            onClick={async () => {
+                              const source = q.source!;
+                              if (sameCore(sourceEdit.content, q)) {
+                                setMessage("内容没有变化，无需创建新版本");
+                                return;
+                              }
+                              if (
+                                !confirm(
+                                  "将在题库生成新版本，并用新版本替换本题（本题跳转会重置）。原版本与已发布问卷不变，是否继续？",
+                                )
+                              )
+                                return;
+                              setBusy(true);
+                              setMessage("");
+                              try {
+                                const family = await api(
+                                  `/library/questions/${source.familyId}`,
+                                );
+                                const created = family.owned
+                                  ? await api(
+                                      `/library/versions/${source.versionId}/derive`,
+                                      {
+                                        method: "POST",
+                                        body: json({
+                                          revision: family.family.revision,
+                                          content: sourceEdit.content,
+                                        }),
+                                      },
+                                    )
+                                  : (
+                                      await api("/library/questions", {
+                                        method: "POST",
+                                        body: json({
+                                          content: sourceEdit.content,
+                                          fromVersionId: source.versionId,
+                                        }),
+                                      })
+                                    ).version;
+                                const next = await api<Question>(
+                                  `/library/versions/${created._id}/import`,
+                                  { method: "POST", body: json({}) },
+                                );
+                                replaceQuestion(q, { ...next, order: q.order });
+                                setSourceEdit(null);
+                                notify(
+                                  family.owned
+                                    ? `已生成题库 v${created.versionNumber} 并替换本题，请保存问卷`
+                                    : "已另存为你名下的新题目并替换本题，请保存问卷",
+                                );
+                              } catch (e) {
+                                setMessage((e as Error).message);
+                              } finally {
+                                setBusy(false);
+                              }
+                            }}
+                          >
+                            保存为新版本并替换
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            disabled={busy}
+                            onClick={() => setSourceEdit(null)}
+                          >
+                            取消修改
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Button
+                    variant="secondary"
+                    disabled={busy}
+                    onClick={async () => {
+                      setBusy(true);
+                      setMessage("");
+                      try {
+                        await api("/library/questions", {
+                          method: "POST",
+                          body: json({ content: q }),
+                        });
+                        notify(
+                          "已保存到我的题库，可通过选题入口复用；当前问卷保持独立题目。",
+                        );
+                      } catch (e) {
+                        setMessage((e as Error).message);
+                      } finally {
+                        setBusy(false);
+                      }
                     }}
                   >
-                    {Object.entries(titles).map(([v, t]) => (
-                      <option key={v} value={v}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="inline-check required-toggle">
+                    存为常用题
+                  </Button>
+                )}
+              </div>
+              <fieldset className="question-core" disabled={!!q.source}>
+                <label>
+                  题目标题
                   <input
-                    type="checkbox"
-                    checked={q.required}
+                    aria-label="题目标题"
+                    value={q.title}
+                    onFocus={(e) => {
+                      if (
+                        Object.values(titles).some(
+                          (title) => q.title === `新${title}`,
+                        )
+                      )
+                        e.currentTarget.select();
+                    }}
+                    onChange={(e) => patchQ({ ...q, title: e.target.value })}
+                  />
+                </label>
+                <div className="form-row">
+                  <label>
+                    题型
+                    <select
+                      value={q.type}
+                      onChange={(e) => {
+                        const next = createQuestion(
+                          e.target.value as QuestionType,
+                          q.order,
+                        );
+                        patchQ({
+                          ...next,
+                          id: q.id,
+                          title: q.title,
+                          description: q.description,
+                        });
+                      }}
+                    >
+                      {Object.entries(titles).map(([v, t]) => (
+                        <option key={v} value={v}>
+                          {t}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="inline-check required-toggle">
+                    <input
+                      type="checkbox"
+                      checked={q.required}
+                      onChange={(e) =>
+                        patchQ({ ...q, required: e.target.checked })
+                      }
+                    />
+                    此题必答
+                  </label>
+                </div>
+                <label>
+                  题目说明（选填）
+                  <input
+                    value={q.description}
                     onChange={(e) =>
-                      patchQ({ ...q, required: e.target.checked })
+                      patchQ({ ...q, description: e.target.value })
                     }
                   />
-                  此题必答
                 </label>
-              </div>
-              <label>
-                题目说明（选填）
-                <input
-                  value={q.description}
-                  onChange={(e) =>
-                    patchQ({ ...q, description: e.target.value })
-                  }
-                />
-              </label>
-              {q.options && (
-                <div className="option-editor">
-                  <span className="label-text">选项</span>
-                  {q.options.map((o, i) => (
-                    <div className="option-row" key={o.id}>
-                      <span>{String.fromCharCode(65 + i)}</span>
+                {q.options && (
+                  <div className="option-editor">
+                    <span className="label-text">选项</span>
+                    {q.options.map((o, i) => (
+                      <div className="option-row" key={o.id}>
+                        <span>{String.fromCharCode(65 + i)}</span>
+                        <input
+                          aria-label={`选项 ${i + 1}`}
+                          value={o.label}
+                          onFocus={(e) => {
+                            if (/^选项 [1-9]\d*$/.test(o.label))
+                              e.currentTarget.select();
+                          }}
+                          onChange={(e) =>
+                            patchQ({
+                              ...q,
+                              options: q.options!.map((t) =>
+                                t.id === o.id
+                                  ? { ...t, label: e.target.value }
+                                  : t,
+                              ),
+                            })
+                          }
+                        />
+                        <button
+                          title="删除选项"
+                          onClick={() => {
+                            if (
+                              q.logic.rules.some(
+                                (r) =>
+                                  r.when.value === o.id ||
+                                  (Array.isArray(r.when.value) &&
+                                    r.when.value.includes(o.id)),
+                              )
+                            ) {
+                              setMessage("跳转规则仍引用此选项，请先修改规则");
+                              return;
+                            }
+                            patchQ({
+                              ...q,
+                              options: q
+                                .options!.filter((t) => t.id !== o.id)
+                                .map((t, i) => ({ ...t, order: i + 1 })),
+                            });
+                          }}
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      className="text-button"
+                      onClick={() =>
+                        patchQ({
+                          ...q,
+                          options: [
+                            ...q.options!,
+                            {
+                              id: createUuid(),
+                              label: `选项 ${q.options!.length + 1}`,
+                              order: q.options!.length + 1,
+                            },
+                          ],
+                        })
+                      }
+                    >
+                      <Plus size={14} />
+                      添加选项
+                    </button>
+                  </div>
+                )}
+                <div className="validation-settings">
+                  <h3>答案校验</h3>
+                  <div className="form-row">
+                    {(q.type === "multiple_choice"
+                      ? ["minSelections", "maxSelections"]
+                      : q.type === "text"
+                        ? ["minLength", "maxLength"]
+                        : q.type === "number"
+                          ? ["min", "max"]
+                          : []
+                    ).map((key) => (
+                      <label key={key}>
+                        {
+                          {
+                            minSelections: "最少选择",
+                            maxSelections: "最多选择",
+                            minLength: "最少字符",
+                            maxLength: "最多字符",
+                            min: "最小值",
+                            max: "最大值",
+                          }[key]
+                        }
+                        <input
+                          type="number"
+                          value={
+                            (q.validation as Record<string, number>)[key] ?? ""
+                          }
+                          onChange={(e) => {
+                            const validation = { ...q.validation };
+                            if (e.target.value === "")
+                              delete (validation as Record<string, unknown>)[
+                                key
+                              ];
+                            else
+                              (validation as Record<string, unknown>)[key] =
+                                e.target.valueAsNumber;
+                            patchQ({ ...q, validation });
+                          }}
+                        />
+                      </label>
+                    ))}
+                  </div>
+                  {q.type === "number" && (
+                    <label className="inline-check">
                       <input
-                        aria-label={`选项 ${i + 1}`}
-                        value={o.label}
-                        onFocus={(e) => {
-                          if (/^选项 [1-9]\d*$/.test(o.label))
-                            e.currentTarget.select();
-                        }}
+                        type="checkbox"
+                        checked={q.validation.integerOnly ?? false}
                         onChange={(e) =>
                           patchQ({
                             ...q,
-                            options: q.options!.map((t) =>
-                              t.id === o.id
-                                ? { ...t, label: e.target.value }
-                                : t,
-                            ),
+                            validation: {
+                              ...q.validation,
+                              integerOnly: e.target.checked,
+                            },
                           })
                         }
                       />
-                      <button
-                        title="删除选项"
-                        onClick={() => {
-                          if (
-                            q.logic.rules.some(
-                              (r) =>
-                                r.when.value === o.id ||
-                                (Array.isArray(r.when.value) &&
-                                  r.when.value.includes(o.id)),
-                            )
-                          ) {
-                            setMessage("跳转规则仍引用此选项，请先修改规则");
-                            return;
-                          }
-                          patchQ({
-                            ...q,
-                            options: q
-                              .options!.filter((t) => t.id !== o.id)
-                              .map((t, i) => ({ ...t, order: i + 1 })),
-                          });
-                        }}
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    className="text-button"
-                    onClick={() =>
-                      patchQ({
-                        ...q,
-                        options: [
-                          ...q.options!,
-                          {
-                            id: createUuid(),
-                            label: `选项 ${q.options!.length + 1}`,
-                            order: q.options!.length + 1,
-                          },
-                        ],
-                      })
-                    }
-                  >
-                    <Plus size={14} />
-                    添加选项
-                  </button>
-                </div>
-              )}
-              <div className="validation-settings">
-                <h3>答案校验</h3>
-                <div className="form-row">
-                  {(q.type === "multiple_choice"
-                    ? ["minSelections", "maxSelections"]
-                    : q.type === "text"
-                      ? ["minLength", "maxLength"]
-                      : q.type === "number"
-                        ? ["min", "max"]
-                        : []
-                  ).map((key) => (
-                    <label key={key}>
-                      {
-                        {
-                          minSelections: "最少选择",
-                          maxSelections: "最多选择",
-                          minLength: "最少字符",
-                          maxLength: "最多字符",
-                          min: "最小值",
-                          max: "最大值",
-                        }[key]
-                      }
-                      <input
-                        type="number"
-                        value={
-                          (q.validation as Record<string, number>)[key] ?? ""
-                        }
-                        onChange={(e) => {
-                          const validation = { ...q.validation };
-                          if (e.target.value === "")
-                            delete (validation as Record<string, unknown>)[key];
-                          else
-                            (validation as Record<string, unknown>)[key] =
-                              e.target.valueAsNumber;
-                          patchQ({ ...q, validation });
-                        }}
-                      />
+                      必须为整数
                     </label>
-                  ))}
+                  )}
+                  {q.type === "single_choice" && (
+                    <p className="muted">选择一个有效选项；必答题不能留空。</p>
+                  )}
                 </div>
-                {q.type === "number" && (
-                  <label className="inline-check">
-                    <input
-                      type="checkbox"
-                      checked={q.validation.integerOnly ?? false}
-                      onChange={(e) =>
-                        patchQ({
-                          ...q,
-                          validation: {
-                            ...q.validation,
-                            integerOnly: e.target.checked,
-                          },
-                        })
-                      }
-                    />
-                    必须为整数
-                  </label>
-                )}
-                {q.type === "single_choice" && (
-                  <p className="muted">选择一个有效选项；必答题不能留空。</p>
-                )}
-              </div>
+              </fieldset>
               <div className="logic-section">
                 <div className="section-heading">
                   <GitBranch size={18} />

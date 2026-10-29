@@ -11,6 +11,7 @@ import {
 import type { Database } from "./database.js";
 import type { Config } from "./config.js";
 import type { Response, Survey, Version } from "./models.js";
+import { LibraryService } from "./library.js";
 
 export const objectId = (value: string) => {
   if (!/^[a-f\d]{24}$/i.test(value))
@@ -213,6 +214,12 @@ export class SurveyService {
     deadline: unknown,
   ) {
     const definition = validateDefinition(input);
+    const previous = await this.owned(id, userId);
+    await new LibraryService(this.d).validateSources(
+      definition,
+      userId,
+      previous.draft ?? undefined,
+    );
     sizeCheck(definition);
     const deadlineAt = parseDeadline(deadline);
     const s = await this.d.surveys.findOneAndUpdate(
@@ -245,6 +252,12 @@ export class SurveyService {
       }
       if (s.status !== "draft" || s.revision !== revision) return conflict();
       const definition = validateDefinition(s.draft, true);
+      await new LibraryService(this.d).validateSources(
+        definition,
+        userId,
+        s.draft ?? undefined,
+        session,
+      );
       sizeCheck(definition);
       if (s.deadlineAt && s.deadlineAt <= new Date())
         throw new DomainError("DEADLINE_INVALID", "截止时间已过");

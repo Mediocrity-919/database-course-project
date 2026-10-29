@@ -1,100 +1,115 @@
-# 问笺 Survey Studio
+# 问笺 · 数据库课程问卷系统
 
-基于 MongoDB 的课程问卷系统第一阶段实现。支持账号、问卷设计、条件跳转、填写保存、匿名提交、URL/二维码分享和统计。题目定义在发布时生成不可变快照，答卷独立保存。
+基于MongoDB的在线问卷系统。第二阶段在第一阶段基础上增加常用题库、跨用户共享、不可变题目版本和跨问卷统计，保留问卷设计、条件跳转、填写保存、匿名与重复填写、URL/二维码分享等功能。
 
-第一阶段系统说明见本README，设计理由与后续计划见[plan.md](plan.md)，项目完成报告在本地单独交付，不纳入GitHub仓库。2026-10-22提交前复验：**94项单元/API测试、19条真实局域网HTTP入口的浏览器流程、类型检查、生产构建及HTTP冒烟通过**。文本Unicode边界和普通HTTP下的UUID/复制兼容问题已修复；公网部署及微信真机修复后复验尚未执行。
-
-## 阶段与分支
-
-| 分支 | 用途 |
+| 分支 | 内容 |
 | --- | --- |
-| [main](https://github.com/Mediocrity-919/database-course-project/tree/main) | 保留第一阶段最终成果 |
-| [v2](https://github.com/Mediocrity-919/database-course-project/tree/v2) | 在第一阶段代码基础上完成第二阶段需求变更 |
+| [main](https://github.com/Mediocrity-919/database-course-project/tree/main) | 第一阶段成果 |
+| [v2](https://github.com/Mediocrity-919/database-course-project/tree/v2) | 第二阶段需求变更、代码与测试；本README说明此版本 |
 
-`v2` 从第一阶段提交 `cd7e6d8` 创建，目前仅完成分支准备，尚未实现第二阶段功能。下文的功能和测试结果均为第一阶段基线。后续修改和新增测试在 `v2` 进行，第二阶段提交时提供该分支链接。
+## 功能
 
-Git分支只隔离代码，不隔离MongoDB数据。修改数据库结构前应备份数据，并验证旧数据和第一阶段功能兼容。课程原始需求文档、项目报告、真实配置和本地数据库不上传仓库。
+- 注册登录：用户名不区分大小写且唯一；新密码为8～128字符，必须包含大写、小写字母和数字，页面逐项提示。
+- 问卷设计：单选、多选、文本、数字四类题目；必答、选择数量、文本长度、数字范围及整数校验；可配置条件跳转。
+- 发布填写：不可变发布快照、截止时间、URL/二维码分享、填写草稿恢复、匿名与重复填写策略、原答卷修改及聚合统计。填写者需要登录，匿名表示向问卷创建者隐藏账号身份。
+- 题库与共享：保存常用题、管理题库归属、按用户名共享；同一道题可以用于多份问卷。
+- 版本管理：从任意历史版派生、查看来源、恢复旧内容为新版本；已发布问卷和旧答案保持原样。
+- 使用与统计：反查引用问卷；统计单个版本或同题型版本合计。改名选项分开显示，外部问卷须授权才贡献汇总，外部文本原文不共享。
 
-## 填写策略与校验
+## 技术与数据结构
 
-编辑问卷时，点击“未命名问卷”“新单选题/多选题/填空”或“选项 1/2”等默认文字会自动全选，直接输入即可替换；新增选项同样适用。已填写的自定义内容保留正常光标编辑方式。
+前端为React、TypeScript和Vite，后端为Node.js、Express和MongoDB官方驱动，共享模块统一校验与跳转规则。业务数据保存在MongoDB，不使用关系数据库或现成问卷框架。
 
-- **禁止重复 + 允许修改**：一个账号在一份问卷内保留一份已提交答卷。修改使用同一答卷文档内的 `editDraft`，确认前不会污染统计，确认后更新原答案，答卷 ID 与提交份数保持不变。
-- **允许重复**：每次填写创建新答卷。原答卷保持不变，统计同时展示答卷份数和账号去重人数。
-- 填写者均须先登录；匿名表示创建者看不到账号身份。内部 `participantKey` 用于授权和去重。
-- 问卷关闭或超过截止时间后，不能提交新答卷或确认修改。相同成功请求的重试仍返回原结果。
-- 恢复草稿沿用并显示原来的匿名/实名设置。上一题与下一题都会保存有效答案；不合规的未完成输入暂留页面并提示，修正后再保存。
-- 保存期间的新编辑会保留并标为未保存；提交结果不确定时保留原请求，点击“重试提交”确认，不会新增答卷。
-- 文本答案去除首尾空白、统一换行后按Unicode码点计数，前端计数、接口与业务校验一致。😀和𠀀各计1字符；组合表情可能占多个码点。文本框保留超限输入并提示修改，不静默截断；上限2000码点，允许每题设置更小范围。
+| 集合 | 职责 |
+| --- | --- |
+| `users` / `sessions` | 账号与登录会话 |
+| `surveys` / `survey_versions` | 问卷入口、草稿及不可变发布快照 |
+| `responses` | 独立答卷、填写进度与修改草稿 |
+| `question_banks` | 题库名称、说明及所有者 |
+| `question_families` | 题目系列、共享名单、题库归属及最新版本指针 |
+| `question_versions` | 不可变内容、版本号、父版本及恢复来源 |
 
-## 环境
+题库复用采用“系列—版本—问卷内快照”：问卷中的`source`绑定固定版本，填写不读取题库最新版。新字段均为可选，旧问卷不需要回填。设计依据、索引与事务见[数据库设计](docs/database-design.md)和[第二阶段设计](docs/stage2-design.md)。
 
-Node.js 24（本机实测 24.14.0）、npm 11、MongoDB 8（本机实测 8.3.11）。数据库需要副本集；项目脚本使用已安装的 MongoDB，在 `.local/mongo-rs` 启动独立开发实例，端口27018，不修改原27017实例。
+## 环境要求
 
-package.json声明Node.js >=22.12，精确依赖以package-lock.json为准。以下命令均在项目根目录执行，先确认27018端口供本项目使用。
+- 推荐Node.js 24、npm 11、MongoDB 8；`package.json`要求Node.js ≥22.12，依赖版本以锁文件为准。
+- MongoDB必须以副本集运行以支持事务。本地脚本启动`survey-rs`单节点副本集，端口27018，数据放在`.local/mongo-rs`，不修改已有27017实例。
+- 浏览器测试默认使用Windows已安装的Chrome；没有Chrome时可运行`npx playwright install chromium`。
+- 下列命令在Windows PowerShell、v2分支的项目根目录执行；其他终端可将`npm.cmd`写为`npm`，一键验收脚本需要Windows PowerShell。
+
+## 首次启动
 
 ```powershell
-# 项目根目录
 npm.cmd ci
 npm.cmd run setup
+```
+
+`setup`仅在`.env`不存在时创建配置并生成随机密钥；已有配置不会覆盖。若`mongod`不在PATH且未安装于`D:\mongodb\bin\mongod.exe`，先在`.env`填写`MONGOD_PATH`的实际路径。
+
+新环境继续执行：
+
+```powershell
 npm.cmd run db:start
 npm.cmd run db:init
-npm.cmd run dev
-```
-
-打开 [开发网站](http://127.0.0.1:5173)。自行注册账号，不内置固定公开密码。
-
-仅使用Vite开发模式时，可将.env中的PUBLIC_BASE_URL改为http://127.0.0.1:5173，重启后端后重新生成分享链接。默认值http://localhost:3000对应下方构建后运行方式；不要把不同端口或不同主机名下的登录Cookie当成同一访问环境。
-
-用户名不区分大小写且不能重复。登录时先检查用户名是否存在：未注册时提示创建账号并带入原用户名，已有账号密码错误时单独提示。新注册密码须为8～128个字符，且同时包含大写字母、小写字母和数字；注册页实时显示各项是否满足，接口也执行相同校验。已有账号仍可使用原密码登录。
-
-`setup` 仅在 `.env` 不存在时复制配置并生成随机密钥。不要删除或随意更换 `PARTICIPANT_HMAC_KEY`，否则历史匿名参与者标识会变化。
-
-| 配置                 | 本地用途                                                      |
-| -------------------- | ------------------------------------------------------------- |
-| MONGODB_URI          | 开发库questionnaire_stage1，连接survey-rs副本集               |
-| MONGODB_TEST_URI     | 独立questionnaire_test，允许测试清理，不能存正式数据          |
-| HOST / PORT          | 默认127.0.0.1 / 3000                                          |
-| APP_ORIGIN           | 允许注册、登录和修改请求的准确来源；模板列出本地3000/5173地址 |
-| PUBLIC_BASE_URL      | URL与二维码使用的网站入口；改域名后重新生成二维码             |
-| COOKIE_SECURE        | 本机HTTP为false，公网HTTPS配置为true                          |
-| PARTICIPANT_HMAC_KEY | 首次setup生成，持久保存；不放入前端或提交材料                 |
-
-若 MongoDB 不在 `D:\mongodb\bin\mongod.exe`，在 `.env` 中设置 `MONGOD_PATH`。`db:start` 启动的是本机回环、无认证开发实例；它保持后台运行并写日志 `.local/mongodb.log`。停止时先确认是本项目实例，再用以下管理员数据库命令正常关停，不要结束所有 mongod 进程：
-
-```powershell
-mongosh 'mongodb://127.0.0.1:27018/admin?directConnection=true' --eval 'db.shutdownServer()'
-```
-
-需要演示数据时，先设置自己选定的密码：
-
-```powershell
-$env:DEMO_PASSWORD='StudyDemo2026' # 示例，请换成自己的合规密码
-npm.cmd run db:seed
-```
-
-将创建 `demo` 账号和示例问卷；已存在时不会重复创建或覆盖密码。
-
-## 构建和正式本地运行
-
-```powershell
 npm.cmd run build
 npm.cmd start
 ```
 
-打开 [本地网站](http://localhost:3000)。Express 同时提供 `apps/web/dist` 和 `/api/v1`，不存在的 API 返回 JSON 404。前端无外部字体或图片依赖。
+打开[本地网站](http://localhost:3000)，自行注册账号。Express同时提供构建后的前端和`/api/v1`接口，无需另开前端进程。修改源码后需要重新构建并重启服务。
 
-若此前使用5173开发入口，将PUBLIC_BASE_URL切回http://localhost:3000。修改后端代码或.env后须重启服务；修改前端源码后须重新构建才能在3000端口看到新页面。
+### 从第一阶段升级
 
-## 局域网访问（当前已配置）
+已有数据时，保留原`.env`和数据库，在v2代码下先备份，再增量初始化：
 
-2026-10-21已将本机网站配置为无线局域网访问，品牌更名为“问笺”。当前访问地址为 **http://172.25.23.29:3000**，本机也可继续使用http://localhost:3000。手机和其他电脑需连接可互访的同一局域网，从该地址登录。
+```powershell
+npm.cmd run db:start
+npm.cmd run db:backup
+npm.cmd run db:init
+npm.cmd run db:verify -- --baseline latest
+npm.cmd run build
+npm.cmd start
+```
 
-.env中的HOST已设为0.0.0.0，PUBLIC_BASE_URL使用上述局域网地址，APP_ORIGIN保留原有本地地址并添加局域网来源，HTTP下COOKIE_SECURE=false。分享链接和重新生成的二维码使用局域网地址；0.0.0.0是监听配置，不是应转发的网址。MongoDB仍仅绑定127.0.0.1:27018。
+逐条执行，前一步失败时先排查，不继续初始化。备份包含敏感数据，仅保存在被忽略的`.local/backups`。不要更换`PARTICIPANT_HMAC_KEY`，它影响历史参与者标识。Git分支不隔离MongoDB数据，main不理解二期字段；同时展示两期应分别使用不同数据库。
 
-当前Windows已有允许Node.js在Public网络入站的规则，本次沿用，未修改现有规则。已在本机通过无线IPv4打开页面并检查API与预检；实体手机访问需继续实测。校园或访客Wi-Fi若启用设备隔离，可能无法互访。电脑休眠/关机或服务停止后不可访问；Wi-Fi或DHCP地址变化后需更新PUBLIC_BASE_URL及APP_ORIGIN并重启、重新生成二维码。具体说明见[部署说明](docs/deployment.md)。
+### 开发模式
 
-## 测试
+```powershell
+npm.cmd run dev
+```
+
+访问[开发页面](http://127.0.0.1:5173)，Vite将API请求代理到3000。此时将`.env`中的`PUBLIC_BASE_URL`设为`http://127.0.0.1:5173`并重启后端，使分享链接指向开发页面。使用构建后的3000入口时改回对应地址。
+
+## 主要配置与局域网访问
+
+| `.env`配置 | 说明 |
+| --- | --- |
+| `MONGODB_URI` | 开发库连接，模板使用`questionnaire_stage1`；二期沿用库名 |
+| `MONGODB_TEST_URI` | 独立测试库`questionnaire_test`，测试会清理其中数据 |
+| `HOST` / `PORT` | 模板监听`127.0.0.1:3000` |
+| `APP_ORIGIN` | 允许注册、登录和修改请求的网页来源，多个地址用逗号分隔 |
+| `PUBLIC_BASE_URL` | URL与二维码中的访问入口 |
+| `COOKIE_SECURE` | 本地HTTP为`false`，HTTPS为`true` |
+| `PARTICIPANT_HMAC_KEY` | setup生成并持久保存的密钥，只放在后端配置中 |
+
+局域网演示使用构建后的3000入口：将`HOST`设为`0.0.0.0`，`PUBLIC_BASE_URL`设为`http://电脑当前局域网IP:3000`，并把该完整地址加入`APP_ORIGIN`，HTTP下保持`COOKIE_SECURE=false`。重启服务并重新生成分享二维码。
+
+手机与电脑需处于可互访的同一局域网，系统防火墙允许该服务入站；MongoDB仍只监听回环地址。IP变化需更新配置，电脑关机或服务停止后无法访问。公网及Cloudflare方案见[部署说明](docs/deployment.md)，当前未完成公网部署。
+
+## 第二阶段操作示例
+
+1. 打开“我的题库”，创建“基本资料”题库和数字题“年龄（周岁）”，设置0～120及整数要求，保存并设置题库归属。
+2. 建立两份问卷，点击“从题库选题”并选择v1。题目核心内容锁定，本卷跳转单独配置；发布后分别填写20和40。
+3. 在题库查看使用与统计，应显示两份有效回答、平均30。按用户名共享给另一个账号后，对方可导入或另存自己的题目。
+4. 从v1创建v2，原问卷继续使用v1。草稿中可选择“保存为题库新版本并替换”，或“解除关联并编辑副本”只改本卷。恢复v1会追加新版本，历史不覆盖。
+5. 在“仅此版本”和“全部版本合计”间切换。合计只纳入同题型版本；选项ID与文字均相同才合并。题意或数字单位变化时应使用单版本统计。
+
+共享题目不等于共享答卷。默认只统计本人问卷，题目作者还可统计明确允许汇总的外部问卷；文本原文仅来自本人问卷。跨卷按有效回答份数统计，不宣称去重人数。
+
+## 测试与验收
+
+先启动MongoDB。以下测试共用隔离的`questionnaire_test`，请顺序运行，不能把正式数据放进测试库；浏览器和冒烟分别使用3010、3011端口。
 
 ```powershell
 npm.cmd test
@@ -103,45 +118,46 @@ npm.cmd run smoke
 npm.cmd run test:e2e
 ```
 
-测试与冒烟只使用 `questionnaire_test` 数据库，测试入口会拒绝其他库名。`npm test` 会清理测试库的五个集合，绝不对开发库运行清理。运行测试前先启动项目副本集。各组测试共用测试库，按上述命令顺序运行，不要并发执行；确保3010/3011测试端口空闲。
+数据库只读核查及Windows一键验收：
 
-端到端测试在3010启动构建后的服务，默认使用本机已安装的 Chrome；无 Chrome 时执行 `npx playwright install chromium`，或自行配置 `playwright.config.ts`。如 Windows 环境限制测试框架结束子进程，可手动在单独终端启动3010测试服务，并设置 `PLAYWRIGHT_EXTERNAL_SERVER=1` 运行测试（详见测试说明）。
-
-结果与限制见 [测试结果](docs/test-results.md)，用例与步骤见 [测试用例](docs/test-cases.md)。
-
-最新结果包括36项API集成、19项账号规则/API、29项定义/校验/跳转、6项进度规则、4项UUID兼容及19条浏览器流程；JSON证据保存在docs/test-evidence。微信/HTTP核查及复验步骤见[兼容性核查](docs/browser-compat-audit.md)。文本Unicode边界回归也继续通过。
-
-默认浏览器测试入口为127.0.0.1。为覆盖普通HTTP，可设置PLAYWRIGHT_TEST_ORIGIN=http://电脑局域网IP:3010后运行npm run test:e2e；脚本仍只使用questionnaire_test并限定3010端口。测试结束后移除该环境变量，避免更换网络后保留过时IP。微信打开实际网站时，若复制API不可用，按钮会选中链接并提示长按复制；不是自动写入剪贴板。
-
-## 代码结构
-
-```text
-apps/server/src/      配置、身份与HTTP入口、问卷业务和事务、MongoDB集合类型
-apps/web/src/         React页面、题目与规则编辑器、填写引擎、统计和分享
-packages/shared/src/  题目schema、答案校验、条件解释器、路径重放
-database/             五集合数据库validator和索引、演示定义
-scripts/              环境初始化、副本集启动、数据库初始化、HTTP冒烟
-tests/                单元、MongoDB集成、浏览器端到端
-docs/                 数据库设计、API、关键逻辑、测试与AI日志
+```powershell
+npm.cmd run db:verify
+npm.cmd run db:verify -- --test
+npm.cmd run accept
 ```
 
-为减少课程项目的工具链负担，使用一个根 `package.json` 统一安装依赖，代码目录保留前后端和共享模块边界。统计图使用原生 CSS 条形图；其数据来自 MongoDB 聚合。数据库访问使用官方驱动，不使用关系数据库或现成问卷系统框架。
+`accept`依次执行开发库备份、增量初始化、只读核查、单元/API测试、测试库核查、构建、冒烟和浏览器流程。任何一步失败即停止，日志写入`.local/qa`。它包含开发库初始化，不等同于只读检查。
 
-## 部署
+2026-10-28修复后实际结果：
 
-本轮完成本地代码与验证，公网部署步骤见 [部署说明](docs/deployment.md)。URL和二维码生成使用 `.env` 中的 `PUBLIC_BASE_URL`；localhost 地址不能发给其他设备访问。云端数据库应配置认证、备份、网络限制和所需 TLS，不能原样照搬本机无认证开发实例。
+| 检查 | 结果 |
+| --- | --- |
+| 单元/API及脚本测试 | **128通过**，包括一期94项及二期34项 |
+| Chrome端到端 | **26通过**，包括一期19条及二期7条；0失败、0跳过、0flaky |
+| 类型检查、生产构建、两期HTTP冒烟 | 通过 |
+| 数据库核查 | 测试库12项、开发库含备份比对14项，均0错误、0提示；原11条业务记录未改变 |
 
-## 文档与提交材料
+本次结果为各步骤分别实测，脚本失败保护在临时项目中用模拟命令验证。浏览器包含移动布局及HTTP能力缺失场景，不能替代微信真机验收。详见[测试结果](docs/test-results.md)、[精简测试证据](docs/test-evidence/stage2-precommit-results.json)和[手工验收清单](docs/stage2-audit.md)。
 
-| 文档                                                              | 内容                                                         |
-| ----------------------------------------------------------------- | ------------------------------------------------------------ |
-| [实施计划与当前状态](plan.md)                                     | 设计依据、实际实现、待部署与第二阶段准备                     |
-| [数据库设计](docs/database-design.md)                             | 五集合、嵌入/引用、索引、事务、匿名及统计                    |
-| [API说明](docs/api.md)                                            | 路径、权限、输入输出、错误码                                 |
-| [关键逻辑](docs/key-logic.md)                                     | 路径重放、草稿保存、修改与幂等                               |
-| [测试用例](docs/test-cases.md) / [测试结果](docs/test-results.md) | 输入、步骤、预期、实际结果和证据                             |
-| [AI使用日志](docs/ai-log.md)                                      | 真实提示、生成与修复过程                                     |
-| [需求完整性核查](docs/stage1-audit.md)                            | 逐项要求、历史发现及修复状态                                 |
-| [部署说明](docs/deployment.md)                                    | 本地与Cloudflare接入方案，尚未执行公网部署                   |
+## 项目结构与文档
 
-GitHub仓库为[Mediocrity-919/database-course-project](https://github.com/Mediocrity-919/database-course-project)，本次首次Git提交保存第一阶段代码基线。[提交检查记录](docs/submission-checklist.md)说明文件范围及密钥检查结果。.env、.local/和大作业一.docx仅保留本机，.env.example正常提交。数据库逻辑备份、恢复演练及干净机器安装仍待执行；第二阶段须保留现有核心结构和旧数据，具体迁移根据后续需求设计。
+```text
+apps/server/src/       身份校验、HTTP接口、问卷事务、题库版本及统计
+apps/web/src/          React题库、编辑器、填写、分享及统计页面
+packages/shared/src/  题目与答案校验、跳转规则、复用内容比较
+database/             八集合validator、索引、演示定义及一致性核查
+scripts/              环境设置、数据库启动/备份、构建验收与HTTP冒烟
+tests/                单元、MongoDB/API、脚本与浏览器测试
+docs/                 设计、API、测试、部署及AI使用日志
+```
+
+| 文档 | 内容 |
+| --- | --- |
+| [plan.md](plan.md) | 实施安排与一期历史方案 |
+| [数据库设计](docs/database-design.md) / [第二阶段设计](docs/stage2-design.md) | 数据模型、八项需求映射、兼容性与取舍 |
+| [API说明](docs/api.md) / [关键逻辑](docs/key-logic.md) | 接口、权限、执行流程与统计口径 |
+| [测试用例](docs/test-cases.md) / [测试结果](docs/test-results.md) | 验收步骤、真实结果与历史证据 |
+| [AI使用日志](docs/ai-log.md) | 工具、提示任务、产出、发现的问题及修复过程 |
+| [提交检查](docs/submission-checklist.md) | 提交范围、忽略文件与密钥检查记录 |
+
+真实`.env`、`.local/`、课程原始文档、项目报告、PDF、本机`.claude/`配置、依赖目录、构建产物及运行缓存不提交；仅提交`.env.example`配置模板。项目报告单独保留在本地。当前未做全新机器安装、数据库恢复演练或大规模压力测试。

@@ -10,14 +10,17 @@
     "setup": "tsx scripts/setup.ts",
     "db:start": "tsx scripts/mongo.ts",
     "db:init": "tsx scripts/database.ts init",
+    "db:backup": "tsx scripts/backup.ts",
     "db:seed": "tsx scripts/database.ts seed",
+    "db:verify": "tsx scripts/verify.ts",
     "dev": "concurrently -k \"tsx watch apps/server/src/index.ts\" \"vite --config apps/web/vite.config.ts\"",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit",
     "build": "npm run typecheck && tsc -p tsconfig.server.json && vite build --config apps/web/vite.config.ts",
     "start": "node dist/apps/server/src/index.js",
     "test": "vitest run",
     "test:e2e": "tsx scripts/browser.ts",
-    "smoke": "tsx scripts/smoke.ts"
+    "smoke": "tsx scripts/smoke.ts",
+    "accept": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/acceptance.ps1"
   },
   "dependencies": {
     "argon2": "^0.44.0",

@@ -5,6 +5,7 @@ import { AuthProvider } from "./api.js";
 import { Protected, Shell } from "./ui.js";
 import { AuthPage, Dashboard, NewSurvey, Guide } from "./pages/Home.js";
 import { Editor } from "./pages/Editor.js";
+import { Library } from "./pages/Library.js";
 import { Share, Results } from "./pages/Manage.js";
 import { SurveyEntry, FillSurvey, Complete } from "./pages/Fill.js";
 import "./style.css";
@@ -28,6 +29,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route element={<Protected />}>
             <Route element={<Shell />}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/library" element={<Library />} />
               <Route path="/new" element={<NewSurvey />} />
               <Route path="/guide" element={<Guide />} />
               <Route path="/surveys/:id/edit" element={<Editor />} />

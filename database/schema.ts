@@ -20,6 +20,7 @@ const settings = obj(
     allowAnonymous: { bsonType: "bool" },
     allowMultipleSubmissions: { bsonType: "bool" },
     allowEditAfterSubmission: { bsonType: "bool" },
+    shareLibraryStatistics: { bsonType: "bool" },
   },
 );
 const action = obj(["action"], {
@@ -30,6 +31,10 @@ const question = obj(
   ["id", "order", "type", "title", "required", "validation", "logic"],
   {
     id: str,
+    source: obj(["familyId", "versionId"], {
+      familyId: { bsonType: "string", pattern: "^[a-fA-F0-9]{24}$" },
+      versionId: { bsonType: "string", pattern: "^[a-fA-F0-9]{24}$" },
+    }),
     order: integer,
     type: { enum: ["single_choice", "multiple_choice", "text", "number"] },
     title: { bsonType: "string", minLength: 1, maxLength: 500 },
@@ -290,6 +295,104 @@ export const validators: Record<string, Document> = {
     ],
   },
 };
+// A reusable library item is context free: it never carries a source pointer,
+// is always stored at order 1 and has no survey-specific jump rules.
+const libraryQuestion = {
+  ...question,
+  not: { required: ["source"] },
+  properties: {
+    ...question.properties,
+    order: { ...integer, minimum: 1, maximum: 1 },
+    logic: obj(["matchMode", "rules", "defaultAction"], {
+      matchMode: { enum: ["first_match"] },
+      rules: { bsonType: "array", maxItems: 0 },
+      defaultAction: obj(["action"], { action: { enum: ["next"] } }),
+    }),
+  },
+};
+const oidArray = (max: number) => ({
+  bsonType: "array",
+  maxItems: max,
+  uniqueItems: true,
+  items: oid,
+});
+Object.assign(validators, {
+  question_banks: {
+    $jsonSchema: obj(
+      [
+        "_id",
+        "schemaVersion",
+        "ownerId",
+        "name",
+        "description",
+        "revision",
+        "createdAt",
+        "updatedAt",
+      ],
+      {
+        ...base,
+        ownerId: oid,
+        name: { bsonType: "string", minLength: 1, maxLength: 100 },
+        description: { bsonType: "string", maxLength: 1000 },
+        revision: { ...integer, minimum: 1 },
+        createdAt: date,
+        updatedAt: date,
+      },
+    ),
+  },
+  question_families: {
+    $jsonSchema: obj(
+      [
+        "_id",
+        "schemaVersion",
+        "ownerId",
+        "latestVersionId",
+        "versionCount",
+        "revision",
+        "bankIds",
+        "sharedWithUserIds",
+        "createdAt",
+        "updatedAt",
+      ],
+      {
+        ...base,
+        ownerId: oid,
+        latestVersionId: oid,
+        versionCount: { ...integer, minimum: 1 },
+        revision: { ...integer, minimum: 1 },
+        bankIds: oidArray(20),
+        sharedWithUserIds: oidArray(50),
+        createdAt: date,
+        updatedAt: date,
+      },
+    ),
+  },
+  question_versions: {
+    $jsonSchema: obj(
+      [
+        "_id",
+        "schemaVersion",
+        "familyId",
+        "versionNumber",
+        "parentVersionId",
+        "restoredFromVersionId",
+        "content",
+        "createdBy",
+        "createdAt",
+      ],
+      {
+        ...base,
+        familyId: oid,
+        versionNumber: { ...integer, minimum: 1 },
+        parentVersionId: { bsonType: ["objectId", "null"] },
+        restoredFromVersionId: { bsonType: ["objectId", "null"] },
+        content: libraryQuestion,
+        createdBy: oid,
+        createdAt: date,
+      },
+    ),
+  },
+});
 export async function initializeDatabase(db: Db) {
   const names = new Set(
     (await db.listCollections().toArray()).map((c) => c.name),
@@ -319,6 +422,25 @@ export async function initializeDatabase(db: Db) {
     .collection("sessions")
     .createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
   await db.collection("sessions").createIndex({ userId: 1 });
+  await db
+    .collection("question_banks")
+    .createIndex({ ownerId: 1, updatedAt: -1 });
+  await db
+    .collection("question_families")
+    .createIndex({ ownerId: 1, updatedAt: -1 });
+  await db
+    .collection("question_families")
+    .createIndex({ sharedWithUserIds: 1, updatedAt: -1 });
+  await db.collection("question_families").createIndex({ bankIds: 1 });
+  await db
+    .collection("question_versions")
+    .createIndex({ familyId: 1, versionNumber: 1 }, { unique: true });
+  await db
+    .collection("surveys")
+    .createIndex({ "draft.questions.source.versionId": 1 });
+  await db
+    .collection("survey_versions")
+    .createIndex({ "definition.questions.source.versionId": 1 });
   await db.collection("surveys").createIndex({ publicId: 1 }, { unique: true });
   await db
     .collection("surveys")
@@ -332,25 +454,21 @@ export async function initializeDatabase(db: Db) {
       { surveyId: 1, participantKey: 1, clientAttemptId: 1 },
       { unique: true },
     );
-  await db
-    .collection("responses")
-    .createIndex(
-      { surveyId: 1, participantKey: 1 },
-      {
-        name: "one_submission_per_participant",
-        unique: true,
-        partialFilterExpression: { status: "submitted", repeatAllowed: false },
-      },
-    );
-  await db
-    .collection("responses")
-    .createIndex({
-      surveyId: 1,
-      status: 1,
-      surveyVersionId: 1,
-      submittedAt: -1,
-      _id: -1,
-    });
+  await db.collection("responses").createIndex(
+    { surveyId: 1, participantKey: 1 },
+    {
+      name: "one_submission_per_participant",
+      unique: true,
+      partialFilterExpression: { status: "submitted", repeatAllowed: false },
+    },
+  );
+  await db.collection("responses").createIndex({
+    surveyId: 1,
+    status: 1,
+    surveyVersionId: 1,
+    submittedAt: -1,
+    _id: -1,
+  });
   await db
     .collection("responses")
     .createIndex({ surveyId: 1, participantKey: 1, status: 1, updatedAt: -1 });

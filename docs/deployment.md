@@ -1,6 +1,27 @@
 # 本机、局域网运行与Cloudflare接入
 
-## 当前局域网配置
+## 当前本机运行（2026-10-29）
+
+按用户要求，当前采用本机localhost环境。前后端完整网站为http://localhost:3000，前端开发页为http://localhost:5173，题库入口为http://localhost:3000/library。当前.env关键设置如下；真实环境文件继续忽略，不上传GitHub。
+
+```dotenv
+HOST=127.0.0.1
+PUBLIC_BASE_URL=http://localhost:3000
+APP_ORIGIN=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000
+COOKIE_SECURE=false
+```
+
+新分享链接和二维码使用localhost。历史局域网地址及配置仅作为下文的运行记录，不是当前入口。MongoDB仍使用原有127.0.0.1:27018副本集；账号、密钥和正常业务数据保留。运行方式见README：开发使用npm run dev，构建运行使用npm run build后npm start。
+
+## 第二阶段升级方式
+
+v2无新增外部服务，使用原MongoDB副本集与同一环境文件。先`npm run db:backup`，再`npm run db:init`增量增加题库、系列、版本集合及索引；原五集合旧记录不回填。之后`npm run build`、`npm start`，Express在3000端口同时提供前端静态页及后端API，题库入口/library。当前使用上方localhost配置。
+
+原HMAC密钥、账号、问卷与答卷继续保留，备份在忽略的.local/backups；迁移校验只公开计数与是否变化，不公开内容。切换main并不能还原MongoDB，若要同时演示一期，应从一期备份恢复到隔离库并使用对应配置。恢复演练尚未执行。
+
+验收使用http://localhost:3000/library。浏览器普通HTTP验证不等同实体微信验收；MongoDB仅本机监听。后文保留一期局域网配置过程及未执行的Cloudflare方案。
+
+## 历史局域网配置（2026-10-21，当前未启用）
 
 2026-10-21已启用无线局域网访问。网站品牌为“问笺”，当前电脑的WLAN IPv4为172.25.23.29。访问入口：
 

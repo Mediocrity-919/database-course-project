@@ -68,6 +68,7 @@ export const definitionSchema = z
         allowAnonymous: z.boolean(),
         allowMultipleSubmissions: z.boolean(),
         allowEditAfterSubmission: z.boolean(),
+        shareLibraryStatistics: z.boolean().optional(),
       })
       .strict(),
     questions: z
@@ -75,6 +76,19 @@ export const definitionSchema = z
         z
           .object({
             id: z.string().uuid(),
+            source: z
+              .object({
+                familyId: z
+                  .string()
+                  .regex(/^[a-f\d]{24}$/i)
+                  .toLowerCase(),
+                versionId: z
+                  .string()
+                  .regex(/^[a-f\d]{24}$/i)
+                  .toLowerCase(),
+              })
+              .strict()
+              .optional(),
             order: z.number().int().positive(),
             type: z.enum([
               "single_choice",
@@ -181,6 +195,14 @@ export function validateDefinition(
     );
   const def = parsed.data;
   const errors: FieldError[] = [];
+  const sources = def.questions.flatMap((q) =>
+    q.source ? [q.source.versionId] : [],
+  );
+  if (new Set(sources).size !== sources.length)
+    errors.push({
+      code: "DUPLICATE_SOURCE",
+      message: "同一问卷不能重复引用同一题目版本",
+    });
   if (publish && !def.questions.length)
     errors.push({ code: "NO_QUESTIONS", message: "至少添加一道题目后再发布" });
   if (

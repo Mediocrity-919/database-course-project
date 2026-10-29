@@ -124,6 +124,69 @@ try {
   assert.equal(stats.uniqueRespondents, 1);
   assert.equal(stats.questions[0].average, 30);
   await call(`/surveys/${s._id}/close`, "POST", {});
+  // Stage two uses the same real HTTP server and isolated test database.
+  const item = await call("/library/questions", "POST", {
+    content: def.questions[0],
+  });
+  const bank = await call("/question-banks", "POST", { name: "冒烟题库" });
+  await call(`/library/questions/${item.family._id}/access`, "PUT", {
+    revision: 1,
+    usernames: [],
+    bankIds: [bank._id],
+  });
+  for (const age of [18, 24]) {
+    const q = await call(
+      `/library/versions/${item.version._id}/import`,
+      "POST",
+      {},
+    );
+    const copy = await call("/surveys", "POST", {});
+    const savedCopy = await call(`/surveys/${copy._id}/draft`, "PUT", {
+      revision: 1,
+      definition: { ...def, questions: [q] },
+      deadlineAt: null,
+    });
+    await call(`/surveys/${copy._id}/publish`, "POST", {
+      revision: savedCopy.revision,
+    });
+    const attempt = await call(
+      `/public/surveys/${copy.publicId}/attempts`,
+      "POST",
+      { clientAttemptId: randomUUID(), isAnonymous: true },
+    );
+    await call(`/attempts/${attempt.attempt.id}/submit`, "POST", {
+      revision: attempt.attempt.revision,
+      answers: [{ questionId: q.id, value: age }],
+      submissionId: randomUUID(),
+    });
+  }
+  const aggregate = await call(`/library/versions/${item.version._id}/stats`);
+  assert.equal(aggregate.answerCount, 2);
+  assert.equal(aggregate.average, 21);
+  const v2 = await call(
+    `/library/versions/${item.version._id}/derive`,
+    "POST",
+    { revision: 2, content: { ...item.version.content, title: "年龄新版" } },
+  );
+  assert.equal(v2.versionNumber, 2);
+  const v3 = await call(
+    `/library/versions/${item.version._id}/derive`,
+    "POST",
+    { revision: 3, restore: true },
+  );
+  assert.equal(v3.restoredFromVersionId, item.version._id);
+  assert.equal(
+    (await call(`/library/versions/${item.version._id}/stats`)).average,
+    21,
+  );
+  assert.equal(
+    (await call(`/library/versions/${item.version._id}/usage`)).items.length,
+    2,
+  );
+  assert.equal((await fetch(origin + "/library")).status, 200);
+  console.log(
+    "PASS 二期HTTP冒烟：题库、两卷复用、跨卷平均值、版本派生、恢复及旧统计保持。",
+  );
   console.log(
     "PASS HTTP冒烟：生产构建静态路由、健康检查、注册登录、创建发布、分享URL、匿名提交、修改原答卷、去重统计与关闭。",
   );

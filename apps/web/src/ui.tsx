@@ -109,15 +109,28 @@ export function Protected() {
 }
 export function Shell() {
   const { user, logout } = useAuth();
+  const location = useLocation();
+  const inLibrary = location.pathname === "/library";
   return (
     <div className="app-shell">
       <aside className="sidebar">
         <Brand />
         <div className="workspace-label">个人工作空间</div>
         <nav>
-          <Link className="nav-item active" to="/dashboard">
+          <Link
+            className={`nav-item ${location.pathname === "/dashboard" ? "active" : ""}`}
+            to="/dashboard"
+          >
             <LayoutDashboard size={18} />
             我的问卷
+            <ChevronRight size={15} />
+          </Link>
+          <Link
+            className={`nav-item ${inLibrary ? "active" : ""}`}
+            to="/library"
+          >
+            <BookOpen size={18} />
+            我的题库
             <ChevronRight size={15} />
           </Link>
           <Link className="nav-item" to="/guide">
@@ -154,18 +167,24 @@ export function Shell() {
       <div className="workspace">
         <header className="topbar">
           <span>
-            工作空间 <ChevronRight size={13} /> 我的问卷
+            工作空间 <ChevronRight size={13} />{" "}
+            {inLibrary ? "我的题库" : "我的问卷"}
           </span>
           <span className="topbar-note">
             <i />
             让好奇心有迹可循
           </span>
         </header>
+        <nav className="mobile-nav" aria-label="手机导航">
+          <Link to="/dashboard">我的问卷</Link>
+          <Link to="/library">我的题库</Link>
+          <Link to="/guide">使用指南</Link>
+        </nav>
         <main className="main">
           <Outlet />
         </main>
         <footer>
-          问笺 Survey Studio<span>基于 MongoDB 的问卷系统 · 第一阶段</span>
+          问笺 Survey Studio<span>基于 MongoDB 的问卷系统 · 第二阶段</span>
         </footer>
       </div>
     </div>

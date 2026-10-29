@@ -1,0 +1,896 @@
+{
+  "config": {
+    "argv": [
+      "D:\\nodejs\\node.exe",
+      "D:\\桌面\\大三上\\数据库大作业\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--reporter=list,json"
+    ],
+    "configFile": "D:\\桌面\\大三上\\数据库大作业\\playwright.config.ts",
+    "rootDir": "D:/桌面/大三上/数据库大作业/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/桌面/大三上/数据库大作业/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "D:/桌面/大三上/数据库大作业/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\桌面\\大三上\\数据库大作业\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "",
+        "testDir": "D:\\桌面\\大三上\\数据库大作业\\tests\\e2e",
+        "snapshotDir": "D:\\桌面\\大三上\\数据库大作业\\tests\\e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://172.25.23.29:3010",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "launchOptions": {
+            "executablePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+          },
+          "headless": true
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "acceptance.spec.ts",
+      "file": "acceptance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "文本恰好2字符：输入表情不截断，超限可修正并提交",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1454,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:24.496Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-42d9d5cf10f297f1d001",
+          "file": "acceptance.spec.ts",
+          "line": 60,
+          "column": 1
+        },
+        {
+          "title": "1001个表情可完整输入并提交，2001字符超限可修正",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1032,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:26.795Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-3a06b83d1f8698bf783c",
+          "file": "acceptance.spec.ts",
+          "line": 107,
+          "column": 3
+        },
+        {
+          "title": "2000个表情可完整输入并提交，2001字符超限可修正",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 942,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:27.847Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-c8c14138b01c934865bc",
+          "file": "acceptance.spec.ts",
+          "line": 107,
+          "column": 3
+        },
+        {
+          "title": "恢复实名草稿时页面与数据库身份一致",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1045,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:28.803Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-516fc02c393e5d6f3241",
+          "file": "acceptance.spec.ts",
+          "line": 138,
+          "column": 3
+        },
+        {
+          "title": "恢复匿名草稿时页面与数据库身份一致",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1032,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:29.863Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-c6eeb984508fc816df6b",
+          "file": "acceptance.spec.ts",
+          "line": 138,
+          "column": 3
+        },
+        {
+          "title": "保存等待期间的新编辑保留，必须再次保存后生效",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1152,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:30.909Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-b299d736ddb0a28a68d2",
+          "file": "acceptance.spec.ts",
+          "line": 174,
+          "column": 3
+        },
+        {
+          "title": "预览等待期间的新编辑保留，必须再次保存后生效",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1233,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:32.073Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-17539dce89319e7a3ad0",
+          "file": "acceptance.spec.ts",
+          "line": 174,
+          "column": 3
+        },
+        {
+          "title": "发布问卷等待期间的新编辑保留，必须再次保存后生效",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1115,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:33.319Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-811917649c624aaadf6f",
+          "file": "acceptance.spec.ts",
+          "line": 174,
+          "column": 3
+        },
+        {
+          "title": "上一题保存当前有效答案，刷新后仍可恢复",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1069,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:34.448Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-cd1b351f85751a792734",
+          "file": "acceptance.spec.ts",
+          "line": 244,
+          "column": 1
+        },
+        {
+          "title": "text未完成输入返回前题后仍能进入原题修正",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1196,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:35.531Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-93150d3355ec28b05589",
+          "file": "acceptance.spec.ts",
+          "line": 263,
+          "column": 3
+        },
+        {
+          "title": "number未完成输入返回前题后仍能进入原题修正",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1134,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:36.743Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-d97d87345d164340783f",
+          "file": "acceptance.spec.ts",
+          "line": 263,
+          "column": 3
+        },
+        {
+          "title": "multiple_choice未完成输入返回前题后仍能进入原题修正",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1137,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:37.894Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-ab982a1c02e82d0f96a3",
+          "file": "acceptance.spec.ts",
+          "line": 263,
+          "column": 3
+        },
+        {
+          "title": "首次提交响应丢失后用同一请求重试成功",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1021,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:39.043Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-400d77ff87b49412818c",
+          "file": "acceptance.spec.ts",
+          "line": 321,
+          "column": 3
+        },
+        {
+          "title": "修改原答卷响应丢失后用同一请求重试成功",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1169,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:40.076Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-e151424a4f262f7c30a7",
+          "file": "acceptance.spec.ts",
+          "line": 321,
+          "column": 3
+        },
+        {
+          "title": "保存响应丢失后核对服务器内容恢复进度，保存期间输入锁定",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 996,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:41.258Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-e4f8669fe636746d7cf2",
+          "file": "acceptance.spec.ts",
+          "line": 401,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "auth.spec.ts",
+      "file": "auth.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "登录不存在的账号引导注册，密码逐项提醒，区分密码错误与用户名重名",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2078,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:42.277Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "d748ac400d08b85935ef-b242c8ec2cef8bd0f69a",
+          "file": "auth.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "browser-compat.spec.ts",
+      "file": "browser-compat.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "HTTP微信兼容：四类题、选项、跳转、分享、填写及修改在缺少安全上下文API时可用",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3885,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:44.428Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6062103875e6307010e4-9f1182fd3322223a99f9",
+          "file": "browser-compat.spec.ts",
+          "line": 14,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "library.spec.ts",
+      "file": "library.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "题库完整流程：归属、复用两卷、跨卷统计、新旧版本、派生与恢复",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4275,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:48.345Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad0ae3d52ea8a2949ca9-e2dc9a87dd5081459c93",
+          "file": "library.spec.ts",
+          "line": 51,
+          "column": 1
+        },
+        {
+          "title": "手机HTTP题库选项、替换版本、解除关联和保存刷新",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2441,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:52.631Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad0ae3d52ea8a2949ca9-45cb69f91bc29d89c3be",
+          "file": "library.spec.ts",
+          "line": 146,
+          "column": 1
+        },
+        {
+          "title": "共享题目的双方使用、接收方只读及另存副本",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3826,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:55.087Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ad0ae3d52ea8a2949ca9-899521461bbae437ffb6",
+          "file": "library.spec.ts",
+          "line": 215,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "workflow.spec.ts",
+      "file": "workflow.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "浏览器冒烟：注册、创建四题、发布、二维码、跳题填写、修改、统计、关闭",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5174,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:18:58.952Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c601ceb5ecfc8efa4a14-5513b4270b624208473c",
+          "file": "workflow.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "浏览器冒烟：允许重复填写时生成新答卷，份数增加但人数保持为1",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2087,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-23T03:19:04.140Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c601ceb5ecfc8efa4a14-f9bf377c138b9d75baa5",
+          "file": "workflow.spec.ts",
+          "line": 157,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-23T03:18:23.568Z",
+    "duration": 44013.595,
+    "expected": 22,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
